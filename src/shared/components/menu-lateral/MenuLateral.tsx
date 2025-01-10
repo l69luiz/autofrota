@@ -25,7 +25,9 @@ return (
         <Divider/>
         <Box flex={1}>
         <nav aria-label="Menu principal">
+        
         <List>
+
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>
@@ -34,22 +36,56 @@ return (
               <ListItemText primary="Página inicial" />
             </ListItemButton>
           </ListItem>
+
+
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>
                 <Icon>directions_car</Icon>
-                
               </ListItemIcon>
               <ListItemText primary="Veiculos" />
             </ListItemButton>
           </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <Icon>buildicon</Icon>
+              </ListItemIcon>
+              <ListItemText primary="Manutenções" />
+            </ListItemButton>
+          </ListItem>
+
+
+
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <Icon>personicon</Icon>
+              </ListItemIcon>
+              <ListItemText primary="Clientes" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <Icon>articleIcon</Icon>
+              </ListItemIcon>
+              <ListItemText primary="Contratos" />
+            </ListItemButton>
+          </ListItem>
+
         </List>
+      
       </nav>
         </Box>   
 
-        Teste
         </Box>
+
+
     </Drawer>
+   
     <Box height="100vh" marginLeft={smDown ? 0 : theme.spacing(28)}>
         {children}
     </Box>
