@@ -5,7 +5,7 @@ import DraftsIcon from '@mui/icons-material/Drafts';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
-import {useNavigate} from 'react-router-dom';
+import { useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
 import { useDrawerContext } from "../../contexts";
 
 
@@ -17,22 +17,25 @@ interface IListItemLinksProps {
   onClick: (() => void) | undefined;
 }
 
-const ListItemLink: React.FC<IListItemLinksProps> = ({label, icon, to, onClick}) => {
+const ListItemLink: React.FC<IListItemLinksProps> = ({ label, icon, to, onClick }) => {
   const navigate = useNavigate();
 
-  const handleclick =() =>{
+  const resolvePath = useResolvedPath(to);
+  const match = useMatch({ path: resolvePath.pathname, end: false });
+
+  const handleclick = () => {
     navigate(to);
     onClick?.();
-    
+
   };
 
   return (
-      <ListItemButton onClick={handleclick}>
-        <ListItemIcon>
-          <Icon>{icon}</Icon>
-        </ListItemIcon>
-        <ListItemText primary={label}/>
-      </ListItemButton>
+    <ListItemButton selected={!!match} onClick={handleclick}>
+      <ListItemIcon>
+        <Icon>{icon}</Icon>
+      </ListItemIcon>
+      <ListItemText primary={label} />
+    </ListItemButton>
 
   );
 
@@ -49,13 +52,12 @@ interface MenuLateralProviderProps {
 export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const {IsDrawerOpen, toggleDrawerOpen} = useDrawerContext();
-
+  const { IsDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const [openVeiculos, setOpenVeic] = React.useState(false);
   const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
-
   const [openClientes, setOpenClien] = React.useState(false);
   const handleClickClien = () => { setOpenClien(!openClientes); };
+
 
   return (
     <>
@@ -73,34 +75,20 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
               <List>
 
-                <ListItem disablePadding>
-                  <ListItemLink 
-                  icon='home'
-                  to='/pagina-inicial'
-                  label='Página inicial'
-                  onClick={(undefined)}
-                  />
-                </ListItem>
+                {drawerOptions.map(drawerOptions => (
+
+                  <ListItem disablePadding>
+                    <ListItemLink
+                    key={drawerOptions.path}
+                      icon={drawerOptions.icon}
+                      to={drawerOptions.path}
+                      label={drawerOptions.label}
+                      onClick={smDown ? toggleDrawerOpen : undefined}
+                    />
+                  </ListItem>
 
 
-                <ListItemButton onClick={handleClickClien}>
-                  <ListItemIcon>
-                    <Icon>personicon</Icon>
-                  </ListItemIcon>
-                  <ListItemText primary="Clientes" />
-                  {openClientes ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-
-                <Collapse in={openClientes} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 4 }}>
-                      <ListItemIcon>
-                        <Icon>articleIcon</Icon>
-                      </ListItemIcon>
-                      <ListItemText primary="Contratos" />
-                    </ListItemButton>
-                  </List>
-                </Collapse>
+                ))}
 
 
 

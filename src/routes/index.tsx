@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Button from '@mui/material/Button';
 import { useDrawerContext } from '../shared/contexts';
@@ -10,11 +10,28 @@ import { useDrawerContext } from '../shared/contexts';
 
 
 export const AppRoutes: React.FC = () => {
-  const{ toggleDrawerOpen} = useDrawerContext();
+  const{ toggleDrawerOpen, setDrawerOptions } = useDrawerContext();
+
+  useEffect(() =>{
+    setDrawerOptions([
+      {
+      label: 'Página Inicial',
+      icon: 'home',
+      path: '/pagina-inicial',
+      },
+      
+      {
+      label: 'Clientes',
+      icon: 'personicon',
+      path: '/clientes',
+      }
+    ]);
+},[]);
 
   return (
     <Routes>
-      <Route path="/Pagina-inicial" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
+      <Route path="/pagina-inicial" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
+      <Route path="/clientes" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );
