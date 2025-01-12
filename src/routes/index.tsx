@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Button from '@mui/material/Button';
 import { useDrawerContext } from '../shared/contexts';
+import { Dashboard } from '../pages/dashboard/Dashboard';
 
 
 //export default function ButtonUsage() {
@@ -15,7 +16,7 @@ export const AppRoutes: React.FC = () => {
   useEffect(() =>{
     setDrawerOptions([
       {
-      label: 'Página Inicial',
+      label: 'Home',
       icon: 'home',
       path: '/pagina-inicial',
       },
@@ -30,7 +31,7 @@ export const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/pagina-inicial" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
+      <Route path="/pagina-inicial" element={<Dashboard /> } />
       <Route path="/clientes" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
