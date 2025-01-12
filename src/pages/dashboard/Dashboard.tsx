@@ -8,7 +8,7 @@ export const Dashboard: React.FC = () => {
     
     return(
 
-      <LayoutBaseDePagina titulo='Pagina inicial'>
+      <LayoutBaseDePagina titulo='Pagina inicial' barraDeFerramentas={<>Barra de Feramentas</>}>
             Testando...
       </LayoutBaseDePagina>   
 
