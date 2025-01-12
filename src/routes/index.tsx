@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Button from '@mui/material/Button';
-import { useAppThemeContext } from '../shared/contexts';
+import { useDrawerContext } from '../shared/contexts';
 
 
 //export default function ButtonUsage() {
@@ -10,11 +10,11 @@ import { useAppThemeContext } from '../shared/contexts';
 
 
 export const AppRoutes: React.FC = () => {
-  const{ toggleTheme} = useAppThemeContext();
+  const{ toggleDrawerOpen} = useDrawerContext();
 
   return (
     <Routes>
-      <Route path="/Pagina-inicial" element={<Button variant="contained" color='primary' onClick={toggleTheme}> Trocar tema</Button> } />
+      <Route path="/Pagina-inicial" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );

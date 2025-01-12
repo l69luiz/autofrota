@@ -5,6 +5,39 @@ import DraftsIcon from '@mui/icons-material/Drafts';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
+import {useNavigate} from 'react-router-dom';
+import { useDrawerContext } from "../../contexts";
+
+
+interface IListItemLinksProps {
+  //children: React.ReactNode;
+  label: string;
+  icon: string;
+  to: string;
+  onClick: (() => void) | undefined;
+}
+
+const ListItemLink: React.FC<IListItemLinksProps> = ({label, icon, to, onClick}) => {
+  const navigate = useNavigate();
+
+  const handleclick =() =>{
+    navigate(to);
+    onClick?.();
+    
+  };
+
+  return (
+      <ListItemButton onClick={handleclick}>
+        <ListItemIcon>
+          <Icon>{icon}</Icon>
+        </ListItemIcon>
+        <ListItemText primary={label}/>
+      </ListItemButton>
+
+  );
+
+};
+
 
 interface MenuLateralProviderProps {
   children: React.ReactNode;
@@ -16,16 +49,17 @@ interface MenuLateralProviderProps {
 export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-  
+  const {IsDrawerOpen, toggleDrawerOpen} = useDrawerContext();
+
   const [openVeiculos, setOpenVeic] = React.useState(false);
-  const handleClickVeic = () => {setOpenVeic(!openVeiculos);};
-  
+  const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
+
   const [openClientes, setOpenClien] = React.useState(false);
-  const handleClickClien = () => {setOpenClien(!openClientes);};
+  const handleClickClien = () => { setOpenClien(!openClientes); };
 
   return (
     <>
-      <Drawer open={true} variant={smDown ? 'temporary' : 'permanent'}>
+      <Drawer open={IsDrawerOpen} variant={smDown ? 'temporary' : 'permanent'} onClose={toggleDrawerOpen}>
         <Box width={theme.spacing(28)} height="100%" display="flex" flexDirection="column">
           <Box width="100%" height={theme.spacing(20)} display="flex" alignItems="center" justifyContent="center">
             <Avatar
@@ -40,21 +74,21 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
               <List>
 
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <Icon>home</Icon>
-                    </ListItemIcon>
-                    <ListItemText primary="Página inicial" />
-                  </ListItemButton>
+                  <ListItemLink 
+                  icon='home'
+                  to='/pagina-inicial'
+                  label='Página inicial'
+                  onClick={(undefined)}
+                  />
                 </ListItem>
 
 
                 <ListItemButton onClick={handleClickClien}>
                   <ListItemIcon>
-                  <Icon>personicon</Icon>
+                    <Icon>personicon</Icon>
                   </ListItemIcon>
                   <ListItemText primary="Clientes" />
-                    {openClientes ? <ExpandLess /> : <ExpandMore />}
+                  {openClientes ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
 
                 <Collapse in={openClientes} timeout="auto" unmountOnExit>
@@ -66,16 +100,16 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
                       <ListItemText primary="Contratos" />
                     </ListItemButton>
                   </List>
-                </Collapse> 
+                </Collapse>
 
 
- 
+
                 <ListItemButton onClick={handleClickVeic}>
                   <ListItemIcon>
-                  <Icon>directions_car</Icon>
+                    <Icon>directions_car</Icon>
                   </ListItemIcon>
                   <ListItemText primary="Veiculos" />
-                    {openVeiculos ? <ExpandLess /> : <ExpandMore />}
+                  {openVeiculos ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
 
                 <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
