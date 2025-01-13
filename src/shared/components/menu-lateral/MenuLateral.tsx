@@ -6,7 +6,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 import { useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
-import { useDrawerContext } from "../../contexts";
+import { useAppThemeContext, useDrawerContext } from "../../contexts";
 
 
 interface IListItemLinksProps {
@@ -56,7 +56,9 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
   const [openVeiculos, setOpenVeic] = React.useState(false);
   const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
   const [openClientes, setOpenClien] = React.useState(false);
-  const handleClickClien = () => { setOpenClien(!openClientes); };
+  const { toggleTheme } = useAppThemeContext();
+
+  //const handleClickClien = () => { setOpenClien(!openClientes); };
 
 
   return (
@@ -89,6 +91,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
 
                 ))}
+         
 
 
 
@@ -110,19 +113,36 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
                     </ListItemButton>
                   </List>
                 </Collapse>
-
-
-
-
-
-
-
               </List>
 
             </nav>
           </Box>
 
         </Box>
+
+        
+        <Box>
+            <nav aria-label="Menu principal">
+
+              <List>
+
+              <ListItemButton onClick={toggleTheme} sx={{ pl: 4 }}>
+                      <ListItemIcon>
+                        <Icon>dark_mode</Icon>
+                      </ListItemIcon>
+                      <ListItemText primary="Tema" />
+                    </ListItemButton>
+                </List>
+            </nav>
+          </Box>
+
+
+
+
+
+
+
+        
 
 
       </Drawer>

@@ -20,19 +20,13 @@ export const AppRoutes: React.FC = () => {
       icon: 'home',
       path: '/pagina-inicial',
       },
-      
-      {
-      label: 'Clientes',
-      icon: 'personicon',
-      path: '/clientes',
-      }
+            
     ]);
 },[]);
 
   return (
     <Routes>
       <Route path="/pagina-inicial" element={<Dashboard /> } />
-      <Route path="/clientes" element={<Button variant="contained" color='primary' onClick={toggleDrawerOpen}>Menu</Button> } />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );
