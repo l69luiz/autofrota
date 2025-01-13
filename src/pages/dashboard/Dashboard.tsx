@@ -1,6 +1,6 @@
 import React from "react";
 import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
-import { BarraDeFerramentas } from '../../shared/components';
+import { FerramentasDaListagem } from '../../shared/components';
 
 
 
@@ -12,9 +12,9 @@ export const Dashboard: React.FC = () => {
       <LayoutBaseDePagina 
       titulo='Pagina inicial' 
       barraDeFerramentas={(
-        <BarraDeFerramentas
+        <FerramentasDaListagem
         mostrarInputBusca
-        textoBotaoNovo='Nova' 
+        textoBotaoNovo='Inserir' 
         
         />
       )}>

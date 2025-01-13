@@ -1,2 +1,2 @@
 export * from './menu-lateral/MenuLateral';
-export * from './barra-de-ferramentas/barraDeFerramentas';
+export * from './ferramentas-da-listagem/FerramentasDaListagem';
