@@ -14,7 +14,7 @@ export const Dashboard: React.FC = () => {
       titulo='Pagina inicial' 
       barraDeFerramentas={(
         
-        <FerramentasDeDetalhe/>
+        <FerramentasDeDetalhe mostrarBotaoSalvarEFechar/>
 
         
 

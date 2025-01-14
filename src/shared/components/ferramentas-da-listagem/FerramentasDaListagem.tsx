@@ -12,6 +12,8 @@ interface IFerramentasDaListagemProps {
 
 }
 
+
+
 export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
     textoDaBusca = '',
     mostrarInputBusca= false,
