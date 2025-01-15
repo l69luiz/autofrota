@@ -1,12 +1,52 @@
 import { Environment } from "../../../environments";
 import { Api } from "../axios-config";
 
-const getAll = async(page =1): Promise<any> =>{
+interface IPessoa{
+
+
+};
+
+interface IListagemPessoa{
+    id: number;
+    email: string;
+    cidadeId: number;
+    nomeCompleto: string;
+ 
+};
+
+interface IDetalhePessoa{
+    id: number;
+    email: string;
+    cidadeId: number;
+    nomeCompleto: string;
+ 
+};
+
+type TPessoaComTotalCount = {
+    data: IListagemPessoa[];
+    totalCount:number;
+
+
+};
+
+const getAll = async(page =1, filter =''): Promise<TPessoaComTotalCount | Error> =>{
     try {
-        const urlRelativa = `/pessoas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}`
-        const{data} = await Api.get(urlRelativa);
+        const urlRelativa = `/pessoas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeCompleto_like=${filter}`;
+
+        const{data, headers} = await Api.get(urlRelativa);
+
+        if(data){
+            return {
+               data,
+               totalCount: Number(headers['xtotal-count'] || Environment.LIMITE_DE_LINHAS), 
+            };
+        }
+        return new Error('Erro ao listar os registros.');
         
     } catch (error) {
+        console.error(error);
+        
+        return new Error((error as {message: string}).message || 'Erro ao listar os registros.');
         
     }
 };
