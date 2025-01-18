@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 import Button from '@mui/material/Button';
 import { useDrawerContext } from '../shared/contexts';
-import { Dashboard } from '../pages/dashboard/Dashboard';
+import { 
+  Dashboard,
+  ListagemDeCidade,
+
+ } from '../pages';
 
 
 //export default function ButtonUsage() {
@@ -20,6 +24,11 @@ export const AppRoutes: React.FC = () => {
       icon: 'home',
       path: '/pagina-inicial',
       },
+      {
+      label: 'Cidades',
+      icon: 'location_city',
+      path: '/cidades',
+      },
             
     ]);
 },[]);
@@ -27,6 +36,10 @@ export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/pagina-inicial" element={<Dashboard /> } />
+      
+      <Route path="/cidades" element={<ListagemDeCidade /> } />
+      {/* <Route path="/cidades/detalhe:id" element={<Dashboard /> } /> */}
+      
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );
