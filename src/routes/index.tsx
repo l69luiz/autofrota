@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { useDrawerContext } from '../shared/contexts';
 import { 
   Dashboard,
-  ListagemDeCidade,
+  ListagemDePessoas,
 
  } from '../pages';
 
@@ -25,9 +25,9 @@ export const AppRoutes: React.FC = () => {
       path: '/pagina-inicial',
       },
       {
-      label: 'Cidades',
-      icon: 'location_city',
-      path: '/cidades',
+      label: 'Pessoas',
+      icon: 'people',
+      path: '/pessoas',
       },
             
     ]);
@@ -37,8 +37,8 @@ export const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/pagina-inicial" element={<Dashboard /> } />
       
-      <Route path="/cidades" element={<ListagemDeCidade /> } />
-      {/* <Route path="/cidades/detalhe:id" element={<Dashboard /> } /> */}
+      <Route path="/pessoas" element={<ListagemDePessoas /> } />
+      {/* <Route path="/pessoas/detalhe:id" element={<Dashboard /> } /> */}
       
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
