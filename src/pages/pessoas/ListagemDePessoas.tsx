@@ -15,7 +15,7 @@ export const ListagemDePessoas: React.FC =() => {
 
     useEffect(() => {
         
-        PessoasService.getAll()
+        PessoasService.getAll(1, busca)
 
         .then((result)=>{
 
@@ -27,7 +27,7 @@ export const ListagemDePessoas: React.FC =() => {
                
         });
 
-    },[]);
+    },[busca]);
 
 
 
