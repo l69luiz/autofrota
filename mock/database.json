@@ -6,6 +6,41 @@
         "cidadeId": 2,
         "nomeCompleto": "Juca Silva"
 
+      },
+      {
+        "id":1,
+        "email": "Jãoa@gmail.com",
+        "cidadeId": 2,
+        "nomeCompleto": "João Silva"
+
+      },
+      {
+        "id":2,
+        "email": "Lucas@gmail.com",
+        "cidadeId": 2,
+        "nomeCompleto": "Lucas Silva"
+
+      },
+      {
+        "id":3,
+        "email": "luis@gmail.com",
+        "cidadeId": 2,
+        "nomeCompleto": "luis Fernando Silva"
+
+      },
+      {
+        "id":4,
+        "email": "fabiols@gmail.com",
+        "cidadeId": 2,
+        "nomeCompleto": "Fabio Luiz da Silva"
+
+      },
+      {
+        "id":5,
+        "email": "juca@gmail.com",
+        "cidadeId": 2,
+        "nomeCompleto": "Juca Silva"
+
       }
     ]
   }

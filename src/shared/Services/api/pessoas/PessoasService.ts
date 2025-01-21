@@ -5,7 +5,7 @@ interface IPessoa{
 
 };
 
-interface IListagemPessoa{
+export interface IListagemPessoa{
     id: number;
     email: string;
     cidadeId: number;
@@ -13,7 +13,7 @@ interface IListagemPessoa{
  
 };
 
-interface IDetalhePessoa{
+export interface IDetalhePessoa{
     id: number;
     email: string;
     cidadeId: number;
