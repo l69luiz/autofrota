@@ -21,14 +21,14 @@ export interface IDetalhePessoa{
  
 };
 
-type TPessoaComTotalCount = {
+export type TPessoaComTotalCount = {
     data: IListagemPessoa[];
     totalCount:number;
 
 
 };
 
-const getAll = async(page =1, filter =''): Promise<TPessoaComTotalCount | Error> =>{
+const getAll = async(page = 1, filter =''): Promise<TPessoaComTotalCount | Error> =>{
     try {
         const urlRelativa = `/pessoas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeCompleto_like=${filter}`;
 
@@ -37,7 +37,7 @@ const getAll = async(page =1, filter =''): Promise<TPessoaComTotalCount | Error>
         if(data){
             return {
                data,
-               totalCount: Number(headers['xtotal-count'] || Environment.LIMITE_DE_LINHAS), 
+               totalCount: Number(headers['x-total-count'] || Environment.LIMITE_DE_LINHAS), 
             };
         }
         return new Error('Erro ao listar os registros.');
