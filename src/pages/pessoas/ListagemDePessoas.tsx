@@ -22,7 +22,7 @@ export const ListagemDePessoas: React.FC = () => {
     }, [searchParams]);
 
     const pagina = useMemo(() => {
-        return Number(searchParams.get('pagina')) || '1';
+        return Number(searchParams.get('pagina')) || 1;
 
     }, [searchParams]);
 
