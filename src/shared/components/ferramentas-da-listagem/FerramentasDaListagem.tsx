@@ -9,11 +9,7 @@ interface IFerramentasDaListagemProps {
     textoBotaoNovo?: string;
     mostrarBotaoNovo?: boolean;
     aoClicarEmNovo?: () => void;
-
-
 }
-
-
 
 export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
     textoDaBusca = '',
@@ -22,8 +18,6 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
     textoBotaoNovo ='Novo',
     mostrarBotaoNovo=true,
     aoClicarEmNovo,
-
-
 }) => {
     const theme = useTheme();
 

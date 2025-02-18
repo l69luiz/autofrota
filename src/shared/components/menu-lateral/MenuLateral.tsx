@@ -26,7 +26,6 @@ const ListItemLink: React.FC<IListItemLinksProps> = ({ label, icon, to, onClick 
   const handleclick = () => {
     navigate(to);
     onClick?.();
-
   };
 
   return (
@@ -41,7 +40,6 @@ const ListItemLink: React.FC<IListItemLinksProps> = ({ label, icon, to, onClick 
 
 };
 
-
 interface MenuLateralProviderProps {
   children: React.ReactNode;
 }
@@ -55,11 +53,10 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
   const { IsDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const [openVeiculos, setOpenVeic] = React.useState(false);
   const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
-  const [openClientes, setOpenClien] = React.useState(false);
+  //const [openClientes, setOpenClien] = React.useState(false);
   const { toggleTheme } = useAppThemeContext();
 
   //const handleClickClien = () => { setOpenClien(!openClientes); };
-
 
   return (
     <>
@@ -92,9 +89,6 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
                 ))}
          
-
-
-
                 <ListItemButton onClick={handleClickVeic}>
                   <ListItemIcon>
                     <Icon>directions_car</Icon>
