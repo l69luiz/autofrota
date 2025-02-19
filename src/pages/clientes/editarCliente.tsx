@@ -1,8 +1,12 @@
 //src/pages/clientes/editarClientes.tsx
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Grid, Paper, TextField, Typography, MenuItem } from '@mui/material';
+import { Box, Button, Paper, TextField, Typography, MenuItem } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService } from '../../shared/services/api/clientes/ClientesService';
+//import { Grid2 } from '@mui/material'; // Importe o Grid2 no lugar do Grid
+import Grid from '@mui/material/Grid2';
+//import Grid2 from '@mui/material'; // Importa o Grid2 corretamente
+
 
 interface IDetalheCliente {
   idCliente: number;
@@ -116,13 +120,15 @@ export const EditarCliente: React.FC = () => {
   };
 
 
+
+
   return (
     <Paper elevation={3} sx={{ padding: 4 }}>
       <Typography variant="h6" gutterBottom>
         Editar Cliente
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Nome"
             name="Nome"
@@ -132,7 +138,7 @@ export const EditarCliente: React.FC = () => {
             required
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="CPF/CNPJ"
             name="CPF_CNPJ"
@@ -142,7 +148,7 @@ export const EditarCliente: React.FC = () => {
             required
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Rua"
             name="Rua"
@@ -151,7 +157,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Número"
             name="Numero"
@@ -160,7 +166,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Bairro"
             name="Bairro"
@@ -169,7 +175,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Cidade"
             name="Cidade"
@@ -178,7 +184,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Celular"
             name="Celular"
@@ -187,7 +193,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Celular Secundário"
             name="Celular2"
@@ -196,7 +202,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="RG"
             name="RG"
@@ -205,7 +211,7 @@ export const EditarCliente: React.FC = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Tipo Cliente"
             name="Tipo_Cliente"
@@ -221,7 +227,7 @@ export const EditarCliente: React.FC = () => {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Email"
             name="Email"
@@ -231,7 +237,7 @@ export const EditarCliente: React.FC = () => {
             required
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Sexo"
             name="Sexo"
@@ -247,7 +253,7 @@ export const EditarCliente: React.FC = () => {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
           <TextField
             label="Estado Civil"
             name="Estado_Civil"
@@ -264,7 +270,7 @@ export const EditarCliente: React.FC = () => {
           </TextField>
         </Grid>
       </Grid>
-
+  
       <Box mt={4} display="flex" justifyContent="flex-end">
         <Button onClick={handleCancel} variant="outlined" sx={{ mr: 2 }}>
           Fechar
@@ -275,4 +281,4 @@ export const EditarCliente: React.FC = () => {
       </Box>
     </Paper>
   );
-};
+}  
