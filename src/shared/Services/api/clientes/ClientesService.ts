@@ -11,9 +11,24 @@ export interface IListagemCliente {
 
 export interface IDetalheCliente {
   idCliente: number;
-  Email: string;
-  Celular: string;
   Nome: string;
+  CPF_CNPJ: string;
+  Rua: string;
+  Numero: string;
+  Bairro: string;
+  Cidade: string;
+  Celular: string;
+  Celular2: string;
+  RG: string;
+  Tipo_Cliente: string;
+  Email: string;
+  Grupo: string;
+  StatusAutoRastrear: string;
+  StatusLoja: string;
+  Data_Nascimento: string;
+  Sexo: string;
+  Estado_Civil: string;
+  Lojas_idLoja: string;
 }
 
 export type TClienteComTotalCount = {
@@ -30,7 +45,7 @@ interface Cliente {
 
 const getAll = async (page = 1, filter = ''): Promise<TClienteComTotalCount | Error> => {
   try {
-    const token = localStorage.getItem('token'); // Pega o token do localStorage
+    const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
     
     const urlRelativa = `/clientes?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nome_like=${filter}`;
@@ -53,7 +68,7 @@ const getAll = async (page = 1, filter = ''): Promise<TClienteComTotalCount | Er
 
 const getById = async (idCliente: number): Promise<IDetalheCliente | Error> => {
   try {
-    const token = localStorage.getItem('token'); // Pega o token do localStorage
+    const token = sessionStorage.getItem('token'); // Pega o token do localStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
     
     const { data } = await Api.get(`/clientes/${idCliente}`, config); // Envia o token junto com a requisição
@@ -69,54 +84,48 @@ const getById = async (idCliente: number): Promise<IDetalheCliente | Error> => {
   }
 };
 
-const create = async(dados: Omit<IDetalheCliente, 'id'>): Promise<number | Error> =>{
-    try {
-        const{data} = await Api.post<IDetalheCliente>('/clientes', dados);
+const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<number | Error> => {
+  try {
+    const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
     
-        if(data){
-            return data.idCliente;          
-        }
-        return new Error('Erro ao criar o registro.');
-        
-    } catch (error) {
-        console.error(error);
-        
-        return new Error((error as {message: string}).message || 'Erro ao criar o registro.');
-        
+    const { data } = await Api.post<IDetalheCliente>('/clientes', dados, config); // Envia o token junto com a requisição
+    
+    if (data) {
+      return data.idCliente;
     }
-
-
+    return new Error('Erro ao criar o registro.');
+    
+  } catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
+  }
 };
 
-
-const updateById = async(id: number, dados: IDetalheCliente): Promise<void | Error> =>{
-    try {
-        await Api.put(`/clientes/${id}`, dados);
-               
-    } catch (error) {
-        console.error(error);
-        
-        return new Error((error as {message: string}).message || 'Erro ao atualizar o registro.');
-        
-    }
-
+const updateById = async (id: number, dados: IDetalheCliente): Promise<void | Error> => {
+  try {
+    const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
+    
+    await Api.put(`/clientes/${id}`, dados, config); // Envia o token junto com a requisição
+    
+  } catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao atualizar o registro.');
+  }
 };
 
-const deleteById = async(id: number): Promise<void | Error> =>{
-    try {
-        await Api.delete(`/clientes/${id}`);
-               
-    } catch (error) {
-        console.error(error);
-        
-        return new Error((error as {message: string}).message || 'Erro ao apagar o registro.');
-        
-    }
-
-
-
-
-
+const deleteById = async (id: number): Promise<void | Error> => {
+  try {
+    const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
+    
+    await Api.delete(`/clientes/${id}`, config); // Envia o token junto com a requisição
+    
+  } catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao apagar o registro.');
+  }
 };
 
 export const ClientesService = {

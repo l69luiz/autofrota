@@ -31,7 +31,7 @@ export const AppRoutes: React.FC = () => {
     ]);
   }, [setDrawerOptions]);
 
-  const isAuthenticated = localStorage.getItem('token') !== null;
+  const isAuthenticated = sessionStorage.getItem('token') !== null;
   
   // Função para proteger as rotas que necessitam de autenticação
   const ProtectedRoute = ({ element }: { element: JSX.Element }) => {

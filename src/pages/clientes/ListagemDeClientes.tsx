@@ -59,10 +59,12 @@ export const ListagemDeClientes: React.FC = () => {
     setSelectedCliente(null);
   };
 
+
   const handleEdit = (IdCliente: number) => {
-    navigate(`clientes/editar/${IdCliente}`);
+    navigate(`/clientes/editar/${IdCliente}`); // Navega para a página de edição do cliente
   };
 
+  
   const handleDeleteDialogOpen = (id: number) => {
     setClienteIdParaDeletar(id);
     setDialogOpen(true);
@@ -96,7 +98,7 @@ export const ListagemDeClientes: React.FC = () => {
     const fetchClientes = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         const response = await Api.get("/clientes", {
           params: {
             _page: pagina,

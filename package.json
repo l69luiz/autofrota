@@ -18,6 +18,10 @@
     "@mui/styled-engine-sc": "^6.3.1",
     "axios": "^1.7.9",
     "cra-template-typescript": "1.2.0",
+    "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.4.7",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^19.0.0",
     "react-devtools": "^6.0.1",
     "react-dom": "^19.0.0",
@@ -43,6 +47,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+  "path": "path-browserify",
+  "os": "os-browserify/browser",
+  "crypto": "crypto-browserify"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

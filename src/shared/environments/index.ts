@@ -18,7 +18,12 @@ export const Environment = {
     /**
      * Define a URL base da API 
      */
-    URL_BASE: 'http://localhost:3001/auth'
+    URL_BASE: 'http://localhost:3001/auth',
+    
+    /**
+     * Define a URL base de Login 
+     */
+    URL_LOGIN: 'http://localhost:3001/auth/login'
 
 };
 

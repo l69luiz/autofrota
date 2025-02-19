@@ -1,13 +1,38 @@
+//src/pages/clientes/editarClientes.tsx
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, Paper, TextField, Typography, MenuItem } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Api } from '../../shared/services/api/axios-config'; // Assumindo que já existe um serviço API configurado
+import { ClientesService } from '../../shared/services/api/clientes/ClientesService';
+
+interface IDetalheCliente {
+  idCliente: number;
+  Nome: string;
+  CPF_CNPJ: string;
+  Rua: string;
+  Numero: string;
+  Bairro: string;
+  Cidade: string;
+  Celular: string;
+  Celular2: string;
+  RG: string;
+  Tipo_Cliente: string;
+  Email: string;
+  Grupo: string;
+  StatusAutoRastrear: string;
+  StatusLoja: string;
+  Data_Nascimento: string;
+  Sexo: string;
+  Estado_Civil: string;
+  Lojas_idLoja: string;
+}
 
 export const EditarCliente: React.FC = () => {
   const { idCliente } = useParams(); // Obtenha o ID do cliente da URL
   const navigate = useNavigate();
 
-  const [cliente, setCliente] = useState({
+  // Definindo o estado com a estrutura correta
+  const [cliente, setCliente] = useState<IDetalheCliente>({
+    idCliente: Number(idCliente),
     Nome: '',
     CPF_CNPJ: '',
     Rua: '',
@@ -34,15 +59,27 @@ export const EditarCliente: React.FC = () => {
 
   // Busca os dados do cliente pelo ID
   useEffect(() => {
-    if (idCliente) {
-      Api.get(`/clientes/${idCliente}`)
-        .then((response) => {
-          setCliente(response.data);
-        })
-        .catch((error) => {
-          console.error('Erro ao buscar cliente:', error);
-        });
-    }
+    const fetchCliente = async () => {
+      try {
+        if (idCliente) {
+          const idClienteNumber = Number(idCliente); // Converte para número
+          if (!isNaN(idClienteNumber)) {
+            const response = await ClientesService.getById(idClienteNumber); // Chama o serviço para buscar o cliente
+            // Atualiza o estado com os dados do cliente, se a resposta tiver a estrutura adequada
+            setCliente({
+              ...cliente,
+              ...response, // Adiciona os dados recebidos no estado
+            });
+          } else {
+            console.error('ID de cliente inválido:', idCliente);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao buscar os dados do cliente:', error);
+      }
+    };
+
+    fetchCliente(); // Executa a função
   }, [idCliente]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,21 +90,31 @@ export const EditarCliente: React.FC = () => {
     }));
   };
 
-  const handleSave = () => {
-    Api.put(`/clientes/${idCliente}`, cliente)
-      .then(() => {
-        alert('Cliente atualizado com sucesso!');
-        navigate('/clientes'); // Redireciona após salvar
-      })
-      .catch((error) => {
-        console.error('Erro ao atualizar cliente:', error);
-        alert('Erro ao atualizar cliente!');
-      });
+  const handleSave = async () => {
+    try {
+      if (idCliente) {
+        const idClienteNumber = Number(idCliente);
+        if (!isNaN(idClienteNumber)) {
+          const error = await ClientesService.updateById(idClienteNumber, cliente); // Chama a função updateById
+          if (error instanceof Error) {
+            console.error('Erro ao atualizar cliente:', error.message);
+            alert('Erro ao atualizar cliente!');
+          } else {
+            alert('Cliente atualizado com sucesso!');
+            navigate('/clientes'); // Redireciona após salvar
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
+      alert('Erro ao salvar cliente!');
+    }
   };
 
   const handleCancel = () => {
     navigate('/clientes'); // Volta para a listagem de clientes
   };
+
 
   return (
     <Paper elevation={3} sx={{ padding: 4 }}>
