@@ -64,7 +64,7 @@ export const ListagemDeClientes: React.FC = () => {
     navigate(`/clientes/editar/${IdCliente}`); // Navega para a página de edição do cliente
   };
 
-  
+
   const handleDeleteDialogOpen = (id: number) => {
     setClienteIdParaDeletar(id);
     setDialogOpen(true);
@@ -161,24 +161,13 @@ export const ListagemDeClientes: React.FC = () => {
             ) : rows.length > 0 ? (
               rows.map((row) => (
                 <TableRow key={row.idCliente}>
-                  <TableCell align="center">
+                  <TableCell align="left" sx={{ width: '10%', paddingLeft: 1 }}>
                     <IconButton size="small" onClick={() => handleDeleteDialogOpen(row.idCliente)}>
                       <Icon>delete</Icon>
                     </IconButton>
                     <IconButton size="small" onClick={() => handleEdit(row.idCliente)}>
                       <Icon>edit</Icon>
                     </IconButton>
-                    <IconButton onClick={(event) => handleClick(event, row.idCliente)}>
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl) && selectedCliente === row.idCliente}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={() => handleEdit(row.idCliente)}>Editar</MenuItem>
-                      <MenuItem onClick={() => handleDeleteDialogOpen(row.idCliente)}>Excluir</MenuItem>
-                    </Menu>
                   </TableCell>
                   <TableCell>{row.Nome}</TableCell>
                   <TableCell>{row.Email}</TableCell>

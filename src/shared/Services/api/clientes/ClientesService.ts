@@ -119,9 +119,8 @@ const deleteById = async (id: number): Promise<void | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-    
     await Api.delete(`/clientes/${id}`, config); // Envia o token junto com a requisição
-    
+   
   } catch (error) {
     console.error(error);
     return new Error((error as { message: string }).message || 'Erro ao apagar o registro.');
@@ -135,6 +134,5 @@ export const ClientesService = {
     create,
     updateById,
     deleteById
-
 }
 
