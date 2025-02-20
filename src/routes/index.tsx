@@ -27,11 +27,12 @@ export const AppRoutes: React.FC = () => {
   }, [setDrawerOptions]);
 
   const isAuthenticated = sessionStorage.getItem('token') !== null;
+  console.log("isAuthenticated: ", isAuthenticated);
   
   // Função para proteger as rotas que necessitam de autenticação
-  const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
-    return isAuthenticated ? element : <Navigate to="/login" />;
-  };
+  // const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
+  //   return isAuthenticated ? element : <Navigate to="/login" />;
+  // };
 
   return (
     <Routes>
@@ -39,7 +40,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Login />} />
       
       {/* Rota protegida para a página inicial */}
-      {/* <Route path="/pagina-inicial" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} /> */}
+      <Route path="/pagina-inicial" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
       
       {/* Outras rotas protegidas */}
       <Route path="/clientes" element={isAuthenticated ? <ListagemDeClientes /> : <Navigate to="/login" />} />
@@ -50,7 +51,6 @@ export const AppRoutes: React.FC = () => {
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       {/* <Route path="*" element={isAuthenticated ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} /> */}
 
-      <Route path="/pagina-inicial" element={<ProtectedRoute element={<Dashboard />} />} />
 
     </Routes>
   );

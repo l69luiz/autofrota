@@ -35,7 +35,6 @@ const Login = () => {
 
       // Armazenar o token no localStorage
       sessionStorage.setItem('token', token);
-      
 
       // Redirecionar para a página inicial
       navigate('/pagina-inicial');
@@ -46,8 +45,8 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ backgroundColor: '#f5f5f5', borderRadius: 2, padding: 3 }}>
-      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+    <Container component="main" maxWidth="xs" sx={{ backgroundColor: '#f5f5f5', borderRadius: 2, padding: 3, height: '100vh' }}>
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
         <Typography variant="h5" gutterBottom sx={{ color: '#1976d2' }}>Login</Typography>
         {error && <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>{error}</Typography>}
         <form onSubmit={handleLogin} noValidate>

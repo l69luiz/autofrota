@@ -1,3 +1,4 @@
+//src/shared/components/menu-lateral/MenuLateral.tsx
 import React from "react";
 import { Avatar, Box, Divider, Drawer, Icon, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme } from "@mui/material";
 //import InboxIcon from '@mui/icons-material/Inbox';

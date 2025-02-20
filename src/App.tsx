@@ -1,25 +1,20 @@
 //App.tsx
-
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppRoutes } from './routes';
 import { DrawerProvider } from './shared/contexts';
 import { AppThemeProvider } from './shared/contexts';
 import { MenuLateral } from './shared/components';
-import Login from './pages/Login'; // Certifique-se de que o Login está importado
-
+import Login from './pages/Login';
 
 export const App = () => {
-  const isAuthenticated = localStorage.getItem('token') !== null; // Verifique se o token está presente
+  const isAuthenticated = sessionStorage.getItem('token') !== null;
+  //console.log("Token: ", sessionStorage.getItem('token'));
 
   useEffect(() => {
-    // Verifica se é a primeira vez que o usuário está acessando o site
     const isFirstVisit = sessionStorage.getItem('firstVisit');
-
     if (!isFirstVisit) {
-      // Limpa o localStorage ao detectar a primeira visita
       sessionStorage.clear();
-      // Marca no localStorage que o usuário já acessou
       sessionStorage.setItem('firstVisit', 'true');
     }
   }, []);
@@ -29,14 +24,15 @@ export const App = () => {
       <DrawerProvider>
         <BrowserRouter>
           <Routes>
-            {/* Se não estiver autenticado, vai para a tela de login */}
             {!isAuthenticated ? (
-              <Route path="/" element={<Login />} />
+              // Renderize apenas a página de Login se o usuário não estiver autenticado
+              <Route path="*" element={<Login />} />
             ) : (
               <>
-                {/* Caso esteja autenticado, renderiza o MenuLateral e as outras páginas */}
+                {/* Se o usuário estiver autenticado, redirecione para a página inicial */}
                 <Route path="/" element={<Navigate to="/pagina-inicial" />} />
-                <Route path="*" element={<MenuLateral> <AppRoutes/> </MenuLateral>} />
+                {/* Abaixo, renderize o menu lateral junto com o conteúdo protegido */}
+                <Route path="*" element={<MenuLateral> <AppRoutes /></MenuLateral>} />
               </>
             )}
           </Routes>
@@ -53,27 +49,4 @@ export default App;
 
 
 
-// import React from 'react';
-// import { BrowserRouter, Route } from 'react-router-dom';
-// import { AppRoutes } from './routes';
-// import { DrawerProvider } from './shared/contexts';
-// import { AppThemeProvider } from './shared/contexts';
-// import { MenuLateral } from './shared/components';
 
-// export const App = () => {
-//   return (
-//     <AppThemeProvider>
-//       <DrawerProvider>
-//         <BrowserRouter>
-//           <MenuLateral>
-//             <AppRoutes/>
-             
-//           </MenuLateral>
-
-//         </BrowserRouter>
-//       </DrawerProvider>
-//     </AppThemeProvider>
-//   );
-// }
-
-// export default App;
