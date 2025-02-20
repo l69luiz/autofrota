@@ -36,9 +36,18 @@ const Login = () => {
       // Armazenar o token no localStorage
       sessionStorage.setItem('token', token);
 
+      // Simula uma pausa de 2 segundos antes de redirecionar
+      setTimeout(() => {
       // Redirecionar para a página inicial
+      //console.log(token); // aqui está retornando o token corretamente.
+      console.log('Navegando para página inicial');
       navigate('/pagina-inicial');
-      console.log(token);
+      
+      //navigate('/pagina-inicial');
+      }, 1500); // Pausa de 2 segundos (2000 milissegundos)
+      
+      //console.log('Passou da navegação');
+      
     } catch (error) {
       setError('Erro ao fazer login. Verifique suas credenciais.');
     }

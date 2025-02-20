@@ -1,3 +1,4 @@
+//src/pages/dashboard/Dashboard.tsx
 import React from "react";
 import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
 import { FerramentasDeDetalhe } from "../../shared/components";
