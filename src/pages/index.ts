@@ -1,2 +1,4 @@
 export * from './dashboard/Dashboard';
-export * from './pessoas/ListagemDePessoas';
+export * from './clientes/ListagemDeClientes';
+export * from './clientes/DetalheCliente';
+

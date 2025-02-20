@@ -1,12 +1,11 @@
 //src/pages/clientes/editarClientes.tsx
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Paper, TextField, Typography, MenuItem } from '@mui/material';
+import { Box, Button, Paper, TextField, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ClientesService } from '../../shared/services/api/clientes/ClientesService';
-//import { Grid2 } from '@mui/material'; // Importe o Grid2 no lugar do Grid
+import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
 import Grid from '@mui/material/Grid2';
-//import Grid2 from '@mui/material'; // Importa o Grid2 corretamente
-
+import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
+import { FerramentasDaListagem, FerramentasDeDetalhe } from '../../shared/components';
 
 interface IDetalheCliente {
   idCliente: number;
@@ -30,10 +29,11 @@ interface IDetalheCliente {
   Lojas_idLoja: string;
 }
 
-export const EditarCliente: React.FC = () => {
-  const { idCliente } = useParams(); // Obtenha o ID do cliente da URL
+export const DetalheCliente: React.FC = () => {
+  const { idCliente } = useParams<'idCliente'>(); // Obtenha o ID do cliente da URL
   const navigate = useNavigate();
-
+  const idClienteApagar = Number(idCliente);
+  
   // Definindo o estado com a estrutura correta
   const [cliente, setCliente] = useState<IDetalheCliente>({
     idCliente: Number(idCliente),
@@ -60,6 +60,40 @@ export const EditarCliente: React.FC = () => {
   const tiposCliente = ["Pessoa Física", "Pessoa Jurídica"];
   const sexos = ["Masculino", "Feminino", "Outro"];
   const estadosCivis = ["Solteiro", "Casado", "Divorciado", "Viúvo"];
+  const [dialogOpen, setDialogOpen] = useState(false); // Controla o diálogo de confirmação de exclusão
+  const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
+  const [rows, setRows] = useState<IListagemCliente[]>([]);
+
+    const handleDeleteDialogOpen = (id: number) => {
+      setClienteIdParaDeletar(id);
+      setDialogOpen(true);
+    };
+  
+    const handleDeleteDialogClose = () => {
+      setDialogOpen(false);
+      setClienteIdParaDeletar(null);
+    };
+  
+    const handleDelete = async () => {
+      if (clienteIdParaDeletar) {
+        try {
+          const result = await ClientesService.deleteById(clienteIdParaDeletar);
+          if (result instanceof Error) {
+            alert(result.message);
+          } else {
+            // Atualize a lista de clientes após a exclusão
+            navigate('/clientes');
+            setRows((prevRows) => prevRows.filter((cliente) => cliente.idCliente !== clienteIdParaDeletar));
+          }
+        } catch (error) {
+          console.error("Erro ao deletar cliente:", error);
+        } finally {
+          setDialogOpen(false);
+          setClienteIdParaDeletar(null);
+        }
+      }
+    };
+
 
   // Busca os dados do cliente pelo ID
   useEffect(() => {
@@ -105,6 +139,27 @@ export const EditarCliente: React.FC = () => {
             alert('Erro ao atualizar cliente!');
           } else {
             alert('Cliente atualizado com sucesso!');
+           // navigate('/clientes'); // Redireciona após salvar
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
+      alert('Erro ao salvar cliente!');
+    }
+  };
+
+  const handleSaveEFechar = async () => {
+    try {
+      if (idCliente) {
+        const idClienteNumber = Number(idCliente);
+        if (!isNaN(idClienteNumber)) {
+          const error = await ClientesService.updateById(idClienteNumber, cliente); // Chama a função updateById
+          if (error instanceof Error) {
+            console.error('Erro ao atualizar cliente:', error.message);
+            alert('Erro ao atualizar cliente!');
+          } else {
+            alert('Cliente atualizado com sucesso!');
             navigate('/clientes'); // Redireciona após salvar
           }
         }
@@ -118,14 +173,36 @@ export const EditarCliente: React.FC = () => {
   const handleCancel = () => {
     navigate('/clientes'); // Volta para a listagem de clientes
   };
-
+  
+  
 
 
 
   return (
+  <LayoutBaseDePagina
+  titulo="Detalhe de cliente"
+        barraDeFerramentas={
+          <FerramentasDeDetalhe
+            mostrarBotaoNovo={false}
+            mostrarBotaoSalvarEFechar={idCliente!=='novo'}
+            mostrarBotaoSalvar
+            mostrarBotaoApagar={idCliente!=='novo'}
+            aoClicarEmNovo={()=>navigate('/clientes/detalhe/novo')}
+            aoClicarEmSalvarEFechar={handleSaveEFechar}
+            aoClicarEmSalvar={handleSave}
+            aoClicarEmApagar={() => handleDeleteDialogOpen(idClienteApagar)}
+            aoClicarEmVoltar={handleCancel}
+
+
+
+            
+          />
+        }
+  
+  >
     <Paper elevation={3} sx={{ padding: 4 }}>
       <Typography variant="h6" gutterBottom>
-        Editar Cliente
+        Insira os dados do novo cliente:
       </Typography>
       <Grid container spacing={2}>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 12, sm: 2, md: 4 }}>
@@ -270,15 +347,25 @@ export const EditarCliente: React.FC = () => {
           </TextField>
         </Grid>
       </Grid>
-  
-      <Box mt={4} display="flex" justifyContent="flex-end">
-        <Button onClick={handleCancel} variant="outlined" sx={{ mr: 2 }}>
-          Fechar
-        </Button>
-        <Button onClick={handleSave} variant="contained" color="primary">
-          Salvar
-        </Button>
-      </Box>
     </Paper>
+
+    <Dialog open={dialogOpen} onClose={handleDeleteDialogClose}>
+        <DialogTitle>Confirmar Exclusão</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Você tem certeza de que deseja excluir este cliente? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+  </LayoutBaseDePagina>
   );
 }  

@@ -7,20 +7,20 @@ import { DrawerProvider } from './shared/contexts';
 import { AppThemeProvider } from './shared/contexts';
 import { MenuLateral } from './shared/components';
 import Login from './pages/Login'; // Certifique-se de que o Login está importado
-import { EditarCliente } from './pages/clientes/editarCliente';
+
 
 export const App = () => {
   const isAuthenticated = localStorage.getItem('token') !== null; // Verifique se o token está presente
 
   useEffect(() => {
     // Verifica se é a primeira vez que o usuário está acessando o site
-    const isFirstVisit = localStorage.getItem('firstVisit');
+    const isFirstVisit = sessionStorage.getItem('firstVisit');
 
     if (!isFirstVisit) {
       // Limpa o localStorage ao detectar a primeira visita
-      localStorage.clear();
+      sessionStorage.clear();
       // Marca no localStorage que o usuário já acessou
-      localStorage.setItem('firstVisit', 'true');
+      sessionStorage.setItem('firstVisit', 'true');
     }
   }, []);
 
@@ -36,9 +36,7 @@ export const App = () => {
               <>
                 {/* Caso esteja autenticado, renderiza o MenuLateral e as outras páginas */}
                 <Route path="/" element={<Navigate to="/pagina-inicial" />} />
-                <Route path="*" element={<MenuLateral><AppRoutes /></MenuLateral>} />
-              
-           
+                <Route path="*" element={<MenuLateral> <AppRoutes/> </MenuLateral>} />
               </>
             )}
           </Routes>

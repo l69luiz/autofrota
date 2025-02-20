@@ -61,7 +61,7 @@ export const ListagemDeClientes: React.FC = () => {
 
 
   const handleEdit = (IdCliente: number) => {
-    navigate(`/clientes/editar/${IdCliente}`); // Navega para a página de edição do cliente
+    navigate(`/clientes/detalhe/${IdCliente}`); // Navega para a página de edição do cliente
   };
 
 
@@ -134,7 +134,8 @@ export const ListagemDeClientes: React.FC = () => {
       barraDeFerramentas={
         <FerramentasDaListagem
           mostrarInputBusca
-          textoBotaoNovo="Nova"
+          textoBotaoNovo="Novo"
+          aoClicarEmNovo={()=>navigate('/clientes/detalhe/novo')}
           textoDaBusca={busca}
           aoMudarTextoDeBusca={(texto) =>
             setSearchParams({ busca: texto, pagina: "1" }, { replace: true })

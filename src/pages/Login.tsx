@@ -5,9 +5,6 @@ import axios from 'axios';
 import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import { Environment } from "../shared/environments";
 
-
-console.log(Environment.URL_LOGIN);
-
 // Define um valor padrão vazio caso URL_LOGIN seja undefined
 const urlLogin = Environment.URL_LOGIN || '';
 
@@ -27,18 +24,22 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(urlLogin, {
-        Email: email,
-        Senha: senha,
-      });
+      const response = await axios.post(urlLogin,
+        {
+          Email: email,
+          Senha: senha,
+        }
+      );
 
       const { token } = response.data;
 
       // Armazenar o token no localStorage
       sessionStorage.setItem('token', token);
+      
 
       // Redirecionar para a página inicial
       navigate('/pagina-inicial');
+      console.log(token);
     } catch (error) {
       setError('Erro ao fazer login. Verifique suas credenciais.');
     }

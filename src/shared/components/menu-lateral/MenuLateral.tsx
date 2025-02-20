@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, Box, Divider, Drawer, Icon, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme } from "@mui/material";
 //import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
+//import DraftsIcon from '@mui/icons-material/Drafts';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
@@ -78,7 +78,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
                   <ListItem disablePadding>
                     <ListItemLink
-                    key={drawerOptions.path}
+                      key={drawerOptions.path}
                       icon={drawerOptions.icon}
                       to={drawerOptions.path}
                       label={drawerOptions.label}
@@ -88,16 +88,16 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
 
                 ))}
-         
-                <ListItemButton onClick={handleClickVeic}>
+
+                {/* <ListItemButton onClick={handleClickVeic}>
                   <ListItemIcon>
                     <Icon>directions_car</Icon>
                   </ListItemIcon>
                   <ListItemText primary="Veiculos" />
                   {openVeiculos ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
+                </ListItemButton> */}
 
-                <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
+                {/* <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     <ListItemButton sx={{ pl: 4 }}>
                       <ListItemIcon>
@@ -106,7 +106,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
                       <ListItemText primary="Manutenções" />
                     </ListItemButton>
                   </List>
-                </Collapse>
+                </Collapse> */}
               </List>
 
             </nav>
@@ -114,30 +114,21 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
         </Box>
 
-        
-        <Box>
-            <nav aria-label="Menu principal">
 
-              <List>
+        <Box>
+          <nav aria-label="Menu principal">
+
+            <List>
 
               <ListItemButton onClick={toggleTheme} sx={{ pl: 4 }}>
-                      <ListItemIcon>
-                        <Icon>dark_mode</Icon>
-                      </ListItemIcon>
-                      <ListItemText primary="Tema" />
-                    </ListItemButton>
-                </List>
-            </nav>
-          </Box>
-
-
-
-
-
-
-
-        
-
+                <ListItemIcon>
+                  <Icon>dark_mode</Icon>
+                </ListItemIcon>
+                <ListItemText primary="Tema" />
+              </ListItemButton>
+            </List>
+          </nav>
+        </Box>
 
       </Drawer>
 
