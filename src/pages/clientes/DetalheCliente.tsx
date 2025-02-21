@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
 import Grid from '@mui/material/Grid2';
 import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
-import { FerramentasDaListagem, FerramentasDeDetalhe } from '../../shared/components';
+import { FerramentasDaListagem, FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
 
 interface IDetalheCliente {
   idCliente: number;
@@ -179,6 +179,10 @@ export const DetalheCliente: React.FC = () => {
 
 
   return (
+<MenuLateral>
+      {/* O Dashboard será passado como children para o MenuLateral */}
+      <div style={{ flex: 1}}>
+
   <LayoutBaseDePagina
   titulo="Detalhe de cliente"
         barraDeFerramentas={
@@ -200,6 +204,7 @@ export const DetalheCliente: React.FC = () => {
         }
   
   >
+
     <Paper elevation={3} sx={{ padding: 4 }}>
       <Typography variant="h6" gutterBottom>
         Insira os dados do novo cliente:
@@ -349,6 +354,7 @@ export const DetalheCliente: React.FC = () => {
       </Grid>
     </Paper>
 
+
     <Dialog open={dialogOpen} onClose={handleDeleteDialogClose}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
         <DialogContent>
@@ -367,5 +373,8 @@ export const DetalheCliente: React.FC = () => {
       </Dialog>
 
   </LayoutBaseDePagina>
+  </div>
+</MenuLateral>
+
   );
 }  

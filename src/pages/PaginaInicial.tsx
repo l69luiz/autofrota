@@ -6,7 +6,10 @@ import { Dashboard } from './dashboard/Dashboard';
 export const PaginaInicial: React.FC = () => {
   return (
     <MenuLateral>
-       <Dashboard />
+      {/* O Dashboard será passado como children para o MenuLateral */}
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <Dashboard />
+      </div>
     </MenuLateral>
   );
 };

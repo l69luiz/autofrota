@@ -22,11 +22,12 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  Box,
 } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { ClientesService, IListagemCliente } from "../../shared/services/api/clientes/ClientesService";
 import { LayoutBaseDePagina } from "../../shared/layouts/LayoutBaseDePaginas";
-import { FerramentasDaListagem } from "../../shared/components";
+import { FerramentasDaListagem, MenuLateral } from "../../shared/components";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../shared/hooks";
 import { Api } from "../../shared/services/api/axios-config";
@@ -128,9 +129,15 @@ export const ListagemDeClientes: React.FC = () => {
   );
 
   return (
+
+<MenuLateral>
+      {/* O Dashboard será passado como children para o MenuLateral */}
+      <div style={{ flex: 1 }}>
+
     <LayoutBaseDePagina
       titulo="Listagem de clientes"
       barraDeFerramentas={
+       
         <FerramentasDaListagem
           mostrarInputBusca
           textoBotaoNovo="Novo"
@@ -140,8 +147,11 @@ export const ListagemDeClientes: React.FC = () => {
             setSearchParams({ busca: texto, pagina: "1" }, { replace: true })
           }
         />
+       
+
       }
     >
+
       <TableContainer component={Paper} variant="outlined" sx={{ m: 1, width: "auto" }}>
         <Table>
           <TableHead>
@@ -198,6 +208,8 @@ export const ListagemDeClientes: React.FC = () => {
         </Table>
       </TableContainer>
 
+
+
       <Dialog open={dialogOpen} onClose={handleDeleteDialogClose}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
         <DialogContent>
@@ -214,7 +226,11 @@ export const ListagemDeClientes: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      
     </LayoutBaseDePagina>
+  </div>
+</MenuLateral>
+
   );
 };
 

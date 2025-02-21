@@ -19,7 +19,7 @@ export const Dashboard: React.FC = () => {
         mostrarBotaoSalvarEFechar 
         mostrarBotaoNovo
         mostrarBotaoSalvarEFecharCarregando
-        mostrarBotaoVoltar={false}
+        mostrarBotaoVoltar={false} 
         />
 
         
