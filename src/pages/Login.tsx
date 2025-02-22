@@ -45,7 +45,18 @@ const Login = () => {
       setIsAuthenticated(true);  // Isso aciona o useEffect e redireciona
 
     } catch (error) {
-      setError('Erro ao fazer login. Verifique suas credenciais.');
+      //setError('Erro ao fazer login. Verifique suas credenciais.');
+      if (error.response) {
+        // O erro é uma resposta do servidor
+        console.log(error.response.data);
+        setError(error.response.data.message);  // Defina a mensagem de erro
+      } else if (error.request) {
+        // O erro foi causado pela requisição não recebida
+        setError("Problema na comunicação com o servidor.");
+      } else {
+        // Algum outro erro
+        setError("Erro desconhecido.");
+      }
     }
   };
 
