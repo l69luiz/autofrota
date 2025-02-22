@@ -171,7 +171,7 @@ export const ListagemDeClientes: React.FC = () => {
             ) : clientes.length > 0 ? (
               clientes.map((cliente) => (
                 <TableRow key={cliente.idCliente}>
-                  <TableCell align="left" sx={{ width: '10%', paddingLeft: 1 }}>
+                  <TableCell align="left" sx={{ width: '14%', paddingLeft: 1 }}>
                     <IconButton size="small" onClick={() => handleDeleteDialogOpen(cliente.idCliente)}>
                       <Icon>delete</Icon>
                     </IconButton>

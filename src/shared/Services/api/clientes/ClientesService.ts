@@ -28,7 +28,7 @@ export interface IDetalheCliente {
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
-  Lojas_idLoja: string;
+  Lojas_idLoja: number;
 }
 
 export type TClienteComTotalCount = {
