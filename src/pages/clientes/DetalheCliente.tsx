@@ -49,24 +49,18 @@ export const DetalheCliente: React.FC = () => {
   const idClienteApagar = Number(idCliente);
 
   // Recupera o token do sessionStorage
-  const token = sessionStorage.getItem('token');
+  let idLoja = ClientesService.getIdLojaToken();
+  console.log('ID da Loja Let:', idLoja);
 
-  // Função para obter o idLoja do token
-  const obterIdLoja = (): number => {
-    if (token) {
-      console.log(token);
-      try {
-        //console.log(token);
-        const decoded: any = jwtDecode(token); // Decodifica o token
-        //console.log(token);
-        return decoded.idLojaToken || 0; // Retorna o idLojaToken ou 0 como fallback
-      } catch (error) {
-        console.error('Erro ao decodificar o token:', error);
-        return 0;
-      }
-    }
-    return 0;
-  };
+
+  if (idLoja !== 0) {
+    console.log('ID da Loja IF:', idLoja);
+  } else {
+    console.log('Token inválido ou ID da loja não encontrado.');
+  }
+
+
+ 
 
   const [cliente, setCliente] = useState<IDetalheCliente>({
     idCliente: Number(idCliente),
@@ -87,7 +81,7 @@ export const DetalheCliente: React.FC = () => {
     Data_Nascimento: '',
     Sexo: '',
     Estado_Civil: '',
-    Lojas_idLoja: obterIdLoja(), // Passa o idLojaToken para Lojas_idLoja
+    Lojas_idLoja: idLoja, // Passa o idLojaToken para Lojas_idLoja
   });
 
   const tiposCliente = ['Pessoa Física', 'Pessoa Jurídica'];
@@ -138,21 +132,10 @@ export const DetalheCliente: React.FC = () => {
             setCliente({
               ...cliente,
               ...response,
-              Lojas_idLoja: obterIdLoja(), // Atualiza o idLojaToken
+              
             });
           } else {
-
-            if (!isNaN(idClienteNumber)) {
-              const response = await ClientesService.getById(idClienteNumber);
-              setCliente({
-                ...cliente,
-                ...response,
-                Lojas_idLoja: obterIdLoja(), // Atualiza o idLojaToken
-              });
-            }
-
-
-            console.error('ID de cliente inválido:', idCliente);
+               console.error('ID de cliente inválido:', idCliente);
           }
         }
       } catch (error) {
@@ -242,11 +225,13 @@ export const DetalheCliente: React.FC = () => {
             <FerramentasDeDetalhe
               mostrarBotaoNovo={false}
               mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
-              mostrarBotaoSalvar
+              mostrarBotaoSalvar={idCliente !== 'novo'}
+              mostrarBotaoCriar={true ? idCliente === 'novo' : false }
               mostrarBotaoApagar={idCliente !== 'novo'}
               aoClicarEmNovo={() => navigate('/clientes/detalhe/novo')}
               aoClicarEmSalvarEFechar={handleSaveEFechar}
               aoClicarEmSalvar={handleSave}
+              aoClicarEmCriar={handleCriarCliente}
               aoClicarEmApagar={() => handleDeleteDialogOpen(idClienteApagar)}
               aoClicarEmVoltar={handleCancel}
             />

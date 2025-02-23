@@ -1,4 +1,5 @@
 //src/shared/services/api/clientes/ClientesService.ts
+import { useState } from "react";
 import { Environment } from "../../../environments";
 import { Api } from "../axios-config";
 
@@ -127,12 +128,45 @@ const deleteById = async (id: number): Promise<void | Error> => {
   }
 };
 
+
+const getIdLojaToken = (): number => {
+  // 1. Recuperar o token do sessionStorage
+  const token = sessionStorage.getItem('token');
+  console.log(token);
+
+  if (token) {
+    try {
+      // 2. Decodificar o token JWT
+      const payloadBase64 = token.split('.')[1]; // O payload é a segunda parte do token
+      console.log("Base64 : ",payloadBase64);
+      const payloadJson = atob(payloadBase64); // Decodifica de Base64 para string JSON
+      console.log("STRING : ",payloadJson);
+      const payload = JSON.parse(payloadJson); // Converte a string JSON para objeto
+      console.log("JSON : ",payload);
+
+      // 3. Extrair o idLojaToken e converter para número
+      const idLojaToken2 = payload.idlojaToken;
+      console.log("kasjhdfkjsahdfk : ",idLojaToken2);
+      if (idLojaToken2) {
+        console.log("Number : ", parseInt(idLojaToken2, 10));
+        return parseInt(idLojaToken2, 10); // Retorna o valor convertido para número
+      }
+    } catch (error) {
+      console.error('Erro ao decodificar o token:', error);
+    }
+  }
+
+  // Retorna null caso o token não exista ou ocorra um erro
+  return 0;
+};
+
 export const ClientesService = {
     
     getAll,
     getById,
     create,
     updateById,
-    deleteById
+    deleteById,
+    getIdLojaToken
 }
 

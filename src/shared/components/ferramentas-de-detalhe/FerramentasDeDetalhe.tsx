@@ -4,18 +4,21 @@ import { Box, Button, Divider, Icon, Paper, Skeleton, Theme, Typography, useMedi
 interface IFerramentasDeDetalheProps{
     textoBotaoNovo?: string;
     mostrarBotaoNovo?: boolean;
+    mostrarBotaoCriar?: boolean;
     mostrarBotaoVoltar?: boolean;
     mostrarBotaoApagar?: boolean;
     mostrarBotaoSalvar?: boolean;
     mostrarBotaoSalvarEFechar?: boolean;
     
     mostrarBotaoNovoCarregando?: boolean;
+    mostrarBotaoCriarCarregando?: boolean;
     mostrarBotaoVoltarCarregando?: boolean;
     mostrarBotaoApagarCarregando?: boolean;
     mostrarBotaoSalvarCarregando?: boolean;
     mostrarBotaoSalvarEFecharCarregando?: boolean;
 
     aoClicarEmNovo?: () => void;
+    aoClicarEmCriar?: () => void;
     aoClicarEmVoltar?: () => void;
     aoClicarEmApagar?: () => void;
     aoClicarEmSalvar?: () => void;
@@ -26,18 +29,21 @@ interface IFerramentasDeDetalheProps{
 export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> =({
     textoBotaoNovo= 'Novo',
     mostrarBotaoNovo=true,
+    mostrarBotaoCriar=true,
     mostrarBotaoVoltar=true,
     mostrarBotaoApagar=true,
     mostrarBotaoSalvar=true,
     mostrarBotaoSalvarEFechar=false,
     
     mostrarBotaoNovoCarregando=false,
+    mostrarBotaoCriarCarregando=false,
     mostrarBotaoVoltarCarregando=false,
     mostrarBotaoApagarCarregando=false,
     mostrarBotaoSalvarCarregando=false,
     mostrarBotaoSalvarEFecharCarregando=false,
 
     aoClicarEmNovo,
+    aoClicarEmCriar,
     aoClicarEmVoltar,
     aoClicarEmApagar,
     aoClicarEmSalvar,
@@ -87,6 +93,21 @@ const theme = useTheme();
 
                 </Button>)}
                 {(mostrarBotaoSalvarEFecharCarregando  && !smDown)&&(<Skeleton width={180} height={60}/>)}
+
+
+                {(mostrarBotaoCriar && !mostrarBotaoCriarCarregando)&&(<Button
+                variant='outlined'
+                disableElevation
+                color='primary'
+                onClick={aoClicarEmCriar}
+                startIcon={<Icon>save</Icon>}
+                >
+                    <Typography variant='button' whiteSpace='nowrap' textOverflow='ellipsis' overflow='hidden'>
+                        Criar e salvar
+                    </Typography>
+
+                </Button>)}
+                {(mostrarBotaoCriarCarregando  && !smDown)&&(<Skeleton width={180} height={60}/>)}
                 
 
                 {(mostrarBotaoApagar && !mostrarBotaoApagarCarregando)&&(<Button
