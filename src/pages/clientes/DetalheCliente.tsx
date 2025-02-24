@@ -1,7 +1,6 @@
 //src/pages/clientes/DetalheCliente.tsx
 
 import React, { useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode'; // Importação correta da biblioteca
 import {
   Box,
   Button,
@@ -20,6 +19,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
 import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
 import { FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
+import 'dayjs/locale/pt-br';
+import { ptBR } from '@mui/material/locale';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import dayjs, { Dayjs } from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { IMaskInput } from 'react-imask';
+//import InputMask from 'react-input-mask';
+
 
 interface IDetalheCliente {
   idCliente: number;
@@ -40,28 +50,13 @@ interface IDetalheCliente {
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
-  Lojas_idLoja: number;
 }
 
 export const DetalheCliente: React.FC = () => {
+  const [value, setValue] = React.useState<Dayjs | null>(dayjs());
   const { idCliente } = useParams<'idCliente'>();
   const navigate = useNavigate();
   const idClienteApagar = Number(idCliente);
-
-  // Recupera o token do sessionStorage
-  let idLoja = ClientesService.getIdLojaToken();
-  console.log('ID da Loja Let:', idLoja);
-
-
-  if (idLoja !== 0) {
-    console.log('ID da Loja IF:', idLoja);
-  } else {
-    console.log('Token inválido ou ID da loja não encontrado.');
-  }
-
-
- 
-
   const [cliente, setCliente] = useState<IDetalheCliente>({
     idCliente: Number(idCliente),
     Nome: '',
@@ -81,7 +76,6 @@ export const DetalheCliente: React.FC = () => {
     Data_Nascimento: '',
     Sexo: '',
     Estado_Civil: '',
-    Lojas_idLoja: idLoja, // Passa o idLojaToken para Lojas_idLoja
   });
 
   const tiposCliente = ['Pessoa Física', 'Pessoa Jurídica'];
@@ -93,6 +87,62 @@ export const DetalheCliente: React.FC = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
+  const [dataNascimento, setDataNascimento] = React.useState<Dayjs | null>(cliente.Data_Nascimento ? dayjs(cliente.Data_Nascimento) : null);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const [cpfCnpjMasked, setCpfCnpjMasked] = useState(''); // estado separado para exibir a máscara
+
+
+
+
+
+
+
+  const applyMask = (value: string) => {
+    // Remove caracteres não numéricos
+    const cleanedValue = value.replace(/\D/g, '');
+
+    // Aplica a máscara de CPF ou CNPJ
+    if (cleanedValue.length <= 11) {
+      return cleanedValue
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+        .replace(/(-\d{2})\d+?$/, '$1');
+    } else {
+      return cleanedValue
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2')
+        .replace(/(-\d{2})\d+?$/, '$1');
+    }
+  };
+
+
+
+  // // Função para determinar se é CPF ou CNPJ e aplicar a máscara
+  // const getMask = (value: string) => {
+  //   // Verifica o tamanho do valor inserido para determinar se é CPF ou CNPJ
+  //   return value.length <= 11 ? '999.999.999-99' : '99.999.999/9999-99';
+  // };
+
+  const handleDataNascimentoChange = (date: Dayjs | null) => {
+    setDataNascimento(date);
+    if (date) {
+      const formattedDate = date.format('YYYY-MM-DD');
+      setCliente((prevCliente) => ({
+        ...prevCliente,
+        Data_Nascimento: formattedDate,
+      }));
+    } else {
+      setCliente((prevCliente) => ({
+        ...prevCliente,
+        Data_Nascimento: '',
+      }));
+    }
+  };
 
   const handleDeleteDialogOpen = (id: number) => {
     setClienteIdParaDeletar(id);
@@ -122,6 +172,9 @@ export const DetalheCliente: React.FC = () => {
     }
   };
 
+
+
+
   useEffect(() => {
     const fetchCliente = async () => {
       try {
@@ -129,30 +182,54 @@ export const DetalheCliente: React.FC = () => {
           const idClienteNumber = Number(idCliente);
           if (!isNaN(idClienteNumber)) {
             const response = await ClientesService.getById(idClienteNumber);
-            setCliente({
-              ...cliente,
-              ...response,
-              
-            });
+            if (response instanceof Error) {
+              console.error('Erro ao buscar cliente:', response.message);
+              alert('Erro ao buscar cliente: ' + response.message);
+            } else {
+              setCliente({
+                ...cliente,
+                ...response,
+              });
+              setCpfCnpjMasked(applyMask(response.CPF_CNPJ)); // Aplica a máscara ao carregar o cliente
+              if (response.Data_Nascimento) {
+                setDataNascimento(dayjs(response.Data_Nascimento));
+              }
+            }
           } else {
-               console.error('ID de cliente inválido:', idCliente);
+            console.error('ID de cliente inválido:', idCliente);
           }
         }
       } catch (error) {
         console.error('Erro ao buscar os dados do cliente:', error);
+        alert('Erro ao buscar os dados do cliente.');
       }
     };
 
     fetchCliente();
   }, [idCliente]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCliente((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    // Se for o campo CPF/CNPJ, aplicamos a máscara
+    if (name === 'CPF_CNPJ') {
+      const maskedValue = applyMask(value);
+      setCpfCnpjMasked(maskedValue); // Atualiza o estado com a máscara
+      setCliente((prevCliente) => ({
+        ...prevCliente,
+        CPF_CNPJ: value.replace(/\D/g, ''), // Remove a máscara e armazena só os números no estado do cliente
+      }));
+    } else {
+      setCliente((prevCliente) => ({
+        ...prevCliente,
+        [name]: value,
+      }));
+    }
   };
+
+
+  // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = event.target;
 
   const handleSave = async () => {
     try {
@@ -173,23 +250,111 @@ export const DetalheCliente: React.FC = () => {
     }
   };
 
-  const handleCriarCliente = async()=>{
+
+  const handleCriarCliente = async () => {
     try {
       if (idCliente === 'novo') {
-        console.log(cliente);
-        const error = await ClientesService.create(cliente);
-        if (error instanceof Error) {
-          console.error('Erro ao criar cliente:', error);
-          alert('Erro ao criar cliente!');
+        // Verifica campos obrigatórios
+        if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
+          alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+
+        // Verificação de formato de e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cliente.Email)) {
+          alert('Por favor, insira um e-mail válido.');
+          return;
+        }
+
+        // Criação do cliente
+        const { idCliente, ...clienteSemId } = cliente;
+
+        const response = await ClientesService.create(clienteSemId);
+
+        if (response instanceof Error) {
+          // Exibe o erro vindo do backend
+          console.error('Erro ao criar cliente:', response.message);
+          alert(response.message); // Mostra a mensagem do erro
         } else {
           alert('Cliente criado com sucesso!');
+          navigate('/clientes');
         }
       }
-    }catch{
-
+    } catch (error) {
+      console.error('Erro ao criar cliente:', error);
+      alert('Erro ao criar cliente!');
     }
+  };
 
-  }
+
+
+  // const handleCriarCliente = async () => {
+  //   try {
+  //     if (idCliente === 'novo') {
+  //       // Verifica campos obrigatórios
+  //       if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
+  //         alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+  //         return;
+  //       }
+
+  //       const { idCliente, ...clienteSemId } = cliente;
+  //       const response = await ClientesService.create(clienteSemId);
+
+  //       // Verifica se a resposta contém um erro
+  //       if (response instanceof Error) {
+  //         console.error('Erro ao criar cliente:', response);
+
+  //         // Verifica se o erro tem uma mensagem específica do backend
+  //         if (response.message) {
+  //           alert(response.message); // Exibe a mensagem de erro do backend
+  //         } else {
+  //           alert('Erro ao criar cliente!'); // Mensagem genérica caso não haja mensagem específica
+  //         }
+  //       } else {
+  //         alert('Cliente criado com sucesso!');
+  //         navigate('/clientes');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Erro ao criar cliente:', error);
+
+  //     // Verifica se o erro tem uma mensagem específica do backend
+  //     if (error.response && error.response.data && error.response.data.message) {
+  //       alert(error.response.data.message); // Exibe a mensagem de erro do backend
+  //     } else {
+  //       alert('Erro ao criar cliente!'); // Mensagem genérica caso não haja mensagem específica
+  //     }
+  //   }
+  // };
+
+  // const handleCriarCliente = async () => {
+  //   try {
+  //     if (idCliente === 'novo') {
+  //       // Verifica campos obrigatórios
+  //       if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
+  //         alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+  //         return;
+  //       }
+
+  //       const { idCliente, ...clienteSemId } = cliente;
+  //       const error = await ClientesService.create(clienteSemId);
+  //       if (error instanceof Error) {
+  //         console.log("Erro:  ",error);
+  //         console.log("Instance: ",error instanceof Error);
+
+  //         console.error('Erro ao criar cliente:', error);
+  //         alert('Erro ao criar cliente!');
+  //       } else {
+  //         alert('Cliente criado com sucesso!');
+  //         navigate('/clientes');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Erro ao criar cliente:', error);
+  //     alert('Erro ao criar cliente!');
+  //   }
+  // };
 
   const handleSaveEFechar = async () => {
     try {
@@ -216,6 +381,7 @@ export const DetalheCliente: React.FC = () => {
     navigate('/clientes');
   };
 
+
   return (
     <MenuLateral>
       <div style={{ flex: 1 }}>
@@ -226,7 +392,7 @@ export const DetalheCliente: React.FC = () => {
               mostrarBotaoNovo={false}
               mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
               mostrarBotaoSalvar={idCliente !== 'novo'}
-              mostrarBotaoCriar={true ? idCliente === 'novo' : false }
+              mostrarBotaoCriar={idCliente === 'novo'}
               mostrarBotaoApagar={idCliente !== 'novo'}
               aoClicarEmNovo={() => navigate('/clientes/detalhe/novo')}
               aoClicarEmSalvarEFechar={handleSaveEFechar}
@@ -256,15 +422,18 @@ export const DetalheCliente: React.FC = () => {
 
               {/* CPF/CNPJ */}
               <Grid item xs={12} sm={6} md={4}>
+
+                {/* CPF/CNPJ */}
                 <TextField
                   label="CPF/CNPJ"
                   name="CPF_CNPJ"
-                  value={cliente.CPF_CNPJ}
+                  value={cpfCnpjMasked} // Renderiza o valor mascarado
                   onChange={handleInputChange}
                   fullWidth
                   required
                 />
               </Grid>
+
 
               {/* Rua */}
               <Grid item xs={12} sm={6} md={4}>
@@ -348,11 +517,27 @@ export const DetalheCliente: React.FC = () => {
                 <TextField
                   label="Email"
                   name="Email"
+                  type="email"
                   value={cliente.Email}
                   onChange={handleInputChange}
+                  error={!!emailError}
+                  helperText={emailError}
                   fullWidth
                   required
                 />
+              </Grid>
+
+              {/* Data de Nascimento */}
+              <Grid item xs={12} sm={6} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
+                  <DatePicker
+                    label="Data de nascimento *"
+                    value={dataNascimento}
+                    onChange={handleDataNascimentoChange}
+                    views={['day', 'month', 'year']}
+
+                  />
+                </LocalizationProvider>
               </Grid>
 
               {/* Tipo Cliente */}
@@ -364,6 +549,7 @@ export const DetalheCliente: React.FC = () => {
                   onChange={handleInputChange}
                   select
                   fullWidth
+                  required
                 >
                   {tiposCliente.map((tipo) => (
                     <MenuItem key={tipo} value={tipo}>
@@ -469,495 +655,3 @@ export const DetalheCliente: React.FC = () => {
     </MenuLateral>
   );
 };
-
-
-
-// import React, { useState, useEffect } from 'react';
-// //import * as jwt_decode from 'jwt-decode';
-// //import jwt_decode from 'jwt-decode';
-// import {
-//   Box,
-//   Button,
-//   Paper,
-//   TextField,
-//   Typography,
-//   MenuItem,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogContentText,
-//   DialogActions,
-//   Grid,
-// } from '@mui/material';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
-// import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
-// import { FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
-// import { number } from 'prop-types';
-
-// interface IDetalheCliente {
-//   idCliente: number;
-//   Nome: string;
-//   CPF_CNPJ: string;
-//   Rua: string;
-//   Numero: string;
-//   Bairro: string;
-//   Cidade: string;
-//   Celular: string;
-//   Celular2: string;
-//   RG: string;
-//   Tipo_Cliente: string;
-//   Email: string;
-//   Grupo: string;
-//   StatusAutoRastrear: string;
-//   StatusLoja: string;
-//   Data_Nascimento: string;
-//   Sexo: string;
-//   Estado_Civil: string;
-//   Lojas_idLoja: number;
-// }
-
-// export const DetalheCliente: React.FC = () => {
-  
-//   const jwt_decode = require('jwt-decode');
-//   const token = sessionStorage.getItem("token");
-//   const { idCliente } = useParams<'idCliente'>();
-//   const navigate = useNavigate();
-//   const idClienteApagar = Number(idCliente);
-
-//   const idLoja = () => {
-
-//     if (token) {
-//       try {
-//         // Decodificando o token
-//         const decoded: any = jwt_decode(token);
-    
-//         // Acessando o idLoja no payload
-//         const idLoja = decoded.idLoja;
-    
-//         console.log('idLoja:', idLoja);  // Imprime o idLoja
-    
-//         // Você pode agora utilizar o idLoja conforme necessário
-//       } catch (error) {
-//         console.error('Erro ao decodificar o token:', error);
-//       }
-//     } else {
-//       console.log('Token não encontrado.');
-//     }
-
-//   };
-//   console.log("idLoja: ", idLoja());
-  
-  
-
-//   const [cliente, setCliente] = useState<IDetalheCliente>({
-
-    
-
-//     idCliente: Number(idCliente),
-//     Nome: '',
-//     CPF_CNPJ: '',
-//     Rua: '',
-//     Numero: '',
-//     Bairro: '',
-//     Cidade: '',
-//     Celular: '',
-//     Celular2: '',
-//     RG: '',
-//     Tipo_Cliente: '',
-//     Email: '',
-//     Grupo: '',
-//     StatusAutoRastrear: '',
-//     StatusLoja: '',
-//     Data_Nascimento: '',
-//     Sexo: '',
-//     Estado_Civil: '',
-//     Lojas_idLoja: Number(idLoja())
-//   });
-
-//   const tiposCliente = ['Pessoa Física', 'Pessoa Jurídica'];
-//   const sexos = ['Masculino', 'Feminino', 'Outro'];
-//   const estadosCivis = ['Solteiro', 'Casado', 'Divorciado', 'Viúvo'];
-//   const clienteGrupo = ['Comum', 'Prioritário', 'Funcionário', 'VIP', 'Devedor'];
-//   const clienteStatusAutoRastrear = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
-//   const clienteStatusLoja = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
-
-//   const [dialogOpen, setDialogOpen] = useState(false);
-//   const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
-  
-  
-
-
-//   const handleDeleteDialogOpen = (id: number) => {
-//     setClienteIdParaDeletar(id);
-//     setDialogOpen(true);
-//   };
-
-//   const handleDeleteDialogClose = () => {
-//     setDialogOpen(false);
-//     setClienteIdParaDeletar(null);
-//   };
-
-//   const handleDelete = async () => {
-//     if (clienteIdParaDeletar) {
-//       try {
-//         const result = await ClientesService.deleteById(clienteIdParaDeletar);
-//         if (result instanceof Error) {
-//           alert(result.message);
-//         } else {
-//           navigate('/clientes');
-//         }
-//       } catch (error) {
-//         console.error('Erro ao deletar cliente:', error);
-//       } finally {
-//         setDialogOpen(false);
-//         setClienteIdParaDeletar(null);
-//       }
-//     }
-//   };
-
-//   useEffect(() => {
-//     const fetchCliente = async () => {
-//       try {
-//         if (idCliente) {
-//           const idClienteNumber = Number(idCliente);
-//           if (!isNaN(idClienteNumber)) {
-//             const response = await ClientesService.getById(idClienteNumber);
-//             setCliente({
-//               ...cliente,
-//               ...response,
-//             });
-//           } else {
-//             console.error('ID de cliente inválido:', idCliente);
-//           }
-//         }
-//       } catch (error) {
-//         console.error('Erro ao buscar os dados do cliente:', error);
-//       }
-//     };
-
-//     fetchCliente();
-//   }, [idCliente]);
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setCliente((prevState) => ({
-//       ...prevState,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSave = async () => {
-//     try {
-//       if (idCliente && idCliente !== 'novo') {
-//         const idClienteNumber = Number(idCliente);
-//         if (!isNaN(idClienteNumber)) {
-//           const error = await ClientesService.updateById(idClienteNumber, cliente);
-//           if (error instanceof Error) {
-//             //console.error('Erro ao atualizar cliente:', error.message);
-//             alert('Erro ao atualizar cliente!');
-//           } else {
-
-//             alert('Cliente atualizado com sucesso!');
-//           }
-//         }
-//       }else{
-//         if (idCliente && idCliente === 'novo') {
-          
-        
-
-//             const error = await ClientesService.create(cliente);
-//             if (error instanceof Error) {
-//               console.log(cliente);
-//               console.log('Erro ao criar cliente:', error);
-//               alert('Erro ao criar cliente!!!');
-//             } else {
-  
-//               alert('Cliente criado com sucesso!');
-//             }
-//          }
-
-//       }
-
-//     } catch (error) {
-//       console.error('Erro ao salvar dados do cliente:', error);
-//       alert('Erro ao salvar dados do cliente!');
-//     }
-//   };
-
-//   const handleSaveEFechar = async () => {
-//     try {
-//       if (idCliente) {
-//         const idClienteNumber = Number(idCliente);
-//         if (!isNaN(idClienteNumber)) {
-//           const error = await ClientesService.updateById(idClienteNumber, cliente);
-//           if (error instanceof Error) {
-//             console.error('Erro ao atualizar cliente:', error.message);
-//             alert('Erro ao atualizar cliente!');
-//           } else {
-//             alert('Cliente atualizado com sucesso!');
-//             navigate('/clientes');
-//           }
-//         }
-//       }
-//     } catch (error) {
-//       console.error('Erro ao salvar cliente:', error);
-//       alert('Erro ao salvar cliente!');
-//     }
-//   };
-
-//   const handleCancel = () => {
-//     navigate('/clientes');
-//   };
-
-//   return (
-//     <MenuLateral>
-//       <div style={{ flex: 1 }}>
-//         <LayoutBaseDePagina
-//           titulo="Detalhe de cliente"
-//           barraDeFerramentas={
-//             <FerramentasDeDetalhe
-//               mostrarBotaoNovo={false}
-//               mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
-//               mostrarBotaoSalvar
-//               mostrarBotaoApagar={idCliente !== 'novo'}
-//               aoClicarEmNovo={() => navigate('/clientes/detalhe/novo')}
-//               aoClicarEmSalvarEFechar={handleSaveEFechar}
-//               aoClicarEmSalvar={handleSave}
-//               aoClicarEmApagar={() => handleDeleteDialogOpen(idClienteApagar)}
-//               aoClicarEmVoltar={handleCancel}
-//             />
-//           }
-//         >
-//           <Paper elevation={3} sx={{ padding: 4, marginBottom: 4 }}>
-//             <Typography variant="h6" gutterBottom>
-//               Insira os dados do novo cliente:
-//             </Typography>
-//             <Grid container spacing={2}>
-//               {/* Nome */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Nome"
-//                   name="Nome"
-//                   value={cliente.Nome}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                   required
-//                 />
-//               </Grid>
-
-//               {/* CPF/CNPJ */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="CPF/CNPJ"
-//                   name="CPF_CNPJ"
-//                   value={cliente.CPF_CNPJ}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                   required
-//                 />
-//               </Grid>
-
-//               {/* Rua */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Rua"
-//                   name="Rua"
-//                   value={cliente.Rua}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Número */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Número"
-//                   name="Numero"
-//                   value={cliente.Numero}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Bairro */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Bairro"
-//                   name="Bairro"
-//                   value={cliente.Bairro}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Cidade */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Cidade"
-//                   name="Cidade"
-//                   value={cliente.Cidade}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Celular */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Celular"
-//                   name="Celular"
-//                   value={cliente.Celular}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Celular Secundário */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Celular Secundário"
-//                   name="Celular2"
-//                   value={cliente.Celular2}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* RG */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="RG"
-//                   name="RG"
-//                   value={cliente.RG}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                 />
-//               </Grid>
-
-//               {/* Email */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Email"
-//                   name="Email"
-//                   value={cliente.Email}
-//                   onChange={handleInputChange}
-//                   fullWidth
-//                   required
-//                 />
-//               </Grid>
-
-//               {/* Tipo Cliente */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Tipo Cliente"
-//                   name="Tipo_Cliente"
-//                   value={cliente.Tipo_Cliente}
-//                   onChange={handleInputChange}
-//                   select
-//                   fullWidth
-//                 >
-//                   {tiposCliente.map((tipo) => (
-//                     <MenuItem key={tipo} value={tipo}>
-//                       {tipo}
-//                     </MenuItem>
-//                   ))}
-//                 </TextField>
-//               </Grid>
-
-//               {/* Sexo */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Sexo"
-//                   name="Sexo"
-//                   value={cliente.Sexo}
-//                   onChange={handleInputChange}
-//                   select
-//                   fullWidth
-//                 >
-//                   {sexos.map((sexo) => (
-//                     <MenuItem key={sexo} value={sexo}>
-//                       {sexo}
-//                     </MenuItem>
-//                   ))}
-//                 </TextField>
-//               </Grid>
-
-//               {/* Estado Civil */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Estado Civil"
-//                   name="Estado_Civil"
-//                   value={cliente.Estado_Civil}
-//                   onChange={handleInputChange}
-//                   select
-//                   fullWidth
-//                 >
-//                   {estadosCivis.map((estado) => (
-//                     <MenuItem key={estado} value={estado}>
-//                       {estado}
-//                     </MenuItem>
-//                   ))}
-//                 </TextField>
-//               </Grid>
-
-//               {/* Status na Empresa */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Status na Empresa"
-//                   name="StatusLoja"
-//                   value={cliente.StatusLoja}
-//                   onChange={handleInputChange}
-//                   select
-//                   fullWidth
-//                 >
-//                   {clienteStatusLoja.map((status) => (
-//                     <MenuItem key={status} value={status}>
-//                       {status}
-//                     </MenuItem>
-//                   ))}
-//                 </TextField>
-//               </Grid>
-
-//               {/* Status na AutoRastrear */}
-//               <Grid item xs={12} sm={6} md={4}>
-//                 <TextField
-//                   label="Status na AutoRastrear"
-//                   name="StatusAutoRastrear"
-//                   value={cliente.StatusAutoRastrear}
-//                   onChange={handleInputChange}
-//                   select
-//                   fullWidth
-//                 >
-//                   {clienteStatusAutoRastrear.map((status) => (
-//                     <MenuItem key={status} value={status}>
-//                       {status}
-//                     </MenuItem>
-//                   ))}
-//                 </TextField>
-//               </Grid>
-//             </Grid>
-//           </Paper>
-
-//           {/* Diálogo de Confirmação de Exclusão */}
-//           <Dialog open={dialogOpen} onClose={handleDeleteDialogClose}>
-//             <DialogTitle>Confirmar Exclusão</DialogTitle>
-//             <DialogContent>
-//               <DialogContentText>
-//                 Você tem certeza de que deseja excluir este cliente? Esta ação não pode ser desfeita.
-//               </DialogContentText>
-//             </DialogContent>
-//             <DialogActions>
-//               <Button onClick={handleDeleteDialogClose} color="primary">
-//                 Cancelar
-//               </Button>
-//               <Button onClick={handleDelete} color="primary">
-//                 Confirmar
-//               </Button>
-//             </DialogActions>
-//           </Dialog>
-//         </LayoutBaseDePagina>
-//       </div>
-//     </MenuLateral>
-//   );
-// };
