@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Environment } from "../../../environments";
 import { Api } from "../axios-config";
+import { errorInterceptor } from "../axios-config/interceptors";
+import { Snackbar, Alert } from '@mui/material';
 
 export interface IListagemCliente {
   idCliente: number;
@@ -43,6 +45,9 @@ interface Cliente {
   Email: string;
   Celular: string;
 }
+
+
+
 
 const getAll = async (page = 1, filter = ''): Promise<TClienteComTotalCount | Error> => {
   try {
@@ -91,7 +96,6 @@ const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<number
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-
     const response = await Api.post('/clientes', dados, config); // Faz a requisição
 
     // Verifica se a resposta foi bem-sucedida
@@ -110,39 +114,27 @@ const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<number
   }
 };
 
-
-// const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<number | Error> => {
-//   try {
-//     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
-//     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-//     //console.log("DadosQQQQQQQQQQQ", dados);
-    
-//     const { data } = await Api.post<IDetalheCliente>('/clientes', dados, config); // Envia o token junto com a requisição
-    
-//     if (data) {
-//       return data.idCliente;
-//     } 
-//     return new Error('Erro ao criar o registro.');
-    
-       
-//   } catch (error) {
-//     console.error(error);
-//     return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
-//   }
-// };
-
-const updateById = async (id: number, dados: IDetalheCliente): Promise<void | Error> => {
+const UpdateById = async (id: number, dados: IDetalheCliente): Promise<void | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
+    const resp = await Api.put(`/clientes/${id}`, dados, config); // Envia o token junto com a requisição
+    if (resp.status === 200) {
+      // Exibe uma mensagem de sucesso (Snackbar, por exemplo)
+      return  resp.data.message; // Finaliza a função sem erros
+    }
     
-    await Api.put(`/clientes/${id}`, dados, config); // Envia o token junto com a requisição
+    }
     
-  } catch (error) {
-    console.error(error);
-    return new Error((error as { message: string }).message || 'Erro ao atualizar o registro.');
+   catch (error) {
+    if (error.response) {
+      // Define a mensagem de erro e exibe o Snackbar
+      throw error;
+      //alert(error.response.data.message);
+    } 
   }
-};
+}
+
 
 const deleteById = async (id: number): Promise<void | Error> => {
   try {
@@ -193,7 +185,7 @@ export const ClientesService = {
     getAll,
     getById,
     create,
-    updateById,
+    UpdateById,
     deleteById,
     //getIdLojaToken
 }

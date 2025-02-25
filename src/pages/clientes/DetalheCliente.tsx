@@ -14,6 +14,8 @@ import {
   DialogContentText,
   DialogActions,
   Grid,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
@@ -28,8 +30,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { IMaskInput } from 'react-imask';
-//import InputMask from 'react-input-mask';
-
+import { cpf, cnpj } from 'cpf-cnpj-validator';
 
 interface IDetalheCliente {
   idCliente: number;
@@ -53,6 +54,7 @@ interface IDetalheCliente {
 }
 
 export const DetalheCliente: React.FC = () => {
+  
   const [value, setValue] = React.useState<Dayjs | null>(dayjs());
   const { idCliente } = useParams<'idCliente'>();
   const navigate = useNavigate();
@@ -94,7 +96,23 @@ export const DetalheCliente: React.FC = () => {
   const [cpfCnpjMasked, setCpfCnpjMasked] = useState(''); // estado separado para exibir a máscara
 
 
+  const [openSnackbar, setOpenSnackbar] = useState(false); // Controla a exibição do Snackbar
+  const [mensagemErro, setMensagemErro] = useState(''); // Guarda a mensagem de erro
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning' | 'info' | 'success'> ('error'); // Severidade dinâmica
 
+  // const handleCloseSnackbar = () => {
+  //   setOpenSnackbar(false);
+  // };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  
+    // Após fechar o snackbar, navega para a rota de clientes
+    navigate('/clientes');
+  };
 
 
 
@@ -127,6 +145,7 @@ export const DetalheCliente: React.FC = () => {
   //   // Verifica o tamanho do valor inserido para determinar se é CPF ou CNPJ
   //   return value.length <= 11 ? '999.999.999-99' : '99.999.999/9999-99';
   // };
+
 
   const handleDataNascimentoChange = (date: Dayjs | null) => {
     setDataNascimento(date);
@@ -231,24 +250,7 @@ export const DetalheCliente: React.FC = () => {
   // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const { name, value } = event.target;
 
-  const handleSave = async () => {
-    try {
-      if (idCliente && idCliente !== 'novo') {
-        const idClienteNumber = Number(idCliente);
-        if (!isNaN(idClienteNumber)) {
-          const error = await ClientesService.updateById(idClienteNumber, cliente);
-          if (error instanceof Error) {
-            alert('Erro ao atualizar cliente!');
-          } else {
-            alert('Cliente atualizado com sucesso!');
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao salvar dados do cliente:', error);
-      alert('Erro ao salvar dados do cliente!');
-    }
-  };
+  
 
 
   const handleCriarCliente = async () => {
@@ -267,119 +269,109 @@ export const DetalheCliente: React.FC = () => {
           return;
         }
 
+        //Validação CPF_CNPJ
+        if (cliente.CPF_CNPJ && cpf.isValid(cliente.CPF_CNPJ) === false && cnpj.isValid(cliente.CPF_CNPJ) === false) {
+          alert('Por favor, confira o CPF ou CNPJ digitado.');
+          return;
+
+        }
+
         // Criação do cliente
         const { idCliente, ...clienteSemId } = cliente;
-
-        const response = await ClientesService.create(clienteSemId);
-
-        if (response instanceof Error) {
-          // Exibe o erro vindo do backend
-          console.error('Erro ao criar cliente:', response.message);
-          alert(response.message); // Mostra a mensagem do erro
-        } else {
-          alert('Cliente criado com sucesso!');
-          navigate('/clientes');
-        }
+        await ClientesService.create(clienteSemId);
+        alert('Cliente criado com sucesso!');
+        navigate('/clientes');
       }
     } catch (error) {
-      console.error('Erro ao criar cliente:', error);
-      alert('Erro ao criar cliente!');
+      return;
+      // Exibe o erro vindo do backend
+      //alert(error.response.message); // Mostra a mensagem do erro
     }
   };
-
-
-
-  // const handleCriarCliente = async () => {
-  //   try {
-  //     if (idCliente === 'novo') {
-  //       // Verifica campos obrigatórios
-  //       if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
-  //         alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
-  //         return;
-  //       }
-
-  //       const { idCliente, ...clienteSemId } = cliente;
-  //       const response = await ClientesService.create(clienteSemId);
-
-  //       // Verifica se a resposta contém um erro
-  //       if (response instanceof Error) {
-  //         console.error('Erro ao criar cliente:', response);
-
-  //         // Verifica se o erro tem uma mensagem específica do backend
-  //         if (response.message) {
-  //           alert(response.message); // Exibe a mensagem de erro do backend
-  //         } else {
-  //           alert('Erro ao criar cliente!'); // Mensagem genérica caso não haja mensagem específica
-  //         }
-  //       } else {
-  //         alert('Cliente criado com sucesso!');
-  //         navigate('/clientes');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Erro ao criar cliente:', error);
-
-  //     // Verifica se o erro tem uma mensagem específica do backend
-  //     if (error.response && error.response.data && error.response.data.message) {
-  //       alert(error.response.data.message); // Exibe a mensagem de erro do backend
-  //     } else {
-  //       alert('Erro ao criar cliente!'); // Mensagem genérica caso não haja mensagem específica
-  //     }
-  //   }
-  // };
-
-  // const handleCriarCliente = async () => {
-  //   try {
-  //     if (idCliente === 'novo') {
-  //       // Verifica campos obrigatórios
-  //       if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
-  //         alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
-  //         return;
-  //       }
-
-  //       const { idCliente, ...clienteSemId } = cliente;
-  //       const error = await ClientesService.create(clienteSemId);
-  //       if (error instanceof Error) {
-  //         console.log("Erro:  ",error);
-  //         console.log("Instance: ",error instanceof Error);
-
-  //         console.error('Erro ao criar cliente:', error);
-  //         alert('Erro ao criar cliente!');
-  //       } else {
-  //         alert('Cliente criado com sucesso!');
-  //         navigate('/clientes');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Erro ao criar cliente:', error);
-  //     alert('Erro ao criar cliente!');
-  //   }
-  // };
 
   const handleSaveEFechar = async () => {
     try {
-      if (idCliente) {
+      if (idCliente && idCliente !== 'novo') {
+        const idClienteNumber = Number(idCliente);
+       if (!isNaN(idClienteNumber)) 
+       {
+         const clienteAtualizado =  await ClientesService.UpdateById(idClienteNumber, cliente);
+
+         if (clienteAtualizado instanceof Error) {
+          setMensagemErro(clienteAtualizado.message);
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //navigate('/clientes');
+        } else {
+          setCliente(cliente); // Atualiza o estado com o cliente retornado
+          setMensagemErro('Cliente atualizado com sucesso!');
+          setSnackbarSeverity('success');
+          //navigate('/clientes');
+          setOpenSnackbar(true);
+          
+        }
+       }
+      }
+    } catch (error) {
+      
+      if (error.response) {
+        setMensagemErro(error.response.data.message);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        //navigate('/clientes');
+      } else {
+        setMensagemErro('Erro desconhecido ao atualizar o cliente.');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        //navigate('/clientes');
+      }
+      return;
+    }
+  };
+
+
+  const handleSave = async () => {
+    try {
+      if (idCliente && idCliente !== 'novo') {
         const idClienteNumber = Number(idCliente);
         if (!isNaN(idClienteNumber)) {
-          const error = await ClientesService.updateById(idClienteNumber, cliente);
-          if (error instanceof Error) {
-            console.error('Erro ao atualizar cliente:', error.message);
-            alert('Erro ao atualizar cliente!');
-          } else {
-            alert('Cliente atualizado com sucesso!');
-            navigate('/clientes');
+          const resp = await ClientesService.UpdateById(idClienteNumber, cliente);
+          
+          if ((resp as { message: string }).message) {
+            setMensagemErro((resp as { message: string }).message); // Define a mensagem de sucesso vinda do backend
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            
           }
+          alert('Cliente o!');
+        
         }
       }
     } catch (error) {
-      console.error('Erro ao salvar cliente:', error);
-      alert('Erro ao salvar cliente!');
+      
+      if (error.response) {
+        setMensagemErro(error.response.data.message);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        alert('asdfsErro ao salvar cliente!');
+
+      } else {
+        setMensagemErro('Erro desconhecido ao atualizar o cliente.');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+      }
+      
+      return;
     }
   };
+
+
 
   const handleCancel = () => {
     navigate('/clientes');
   };
+
+  
 
 
   return (
@@ -632,6 +624,20 @@ export const DetalheCliente: React.FC = () => {
               </Grid>
             </Grid>
           </Paper>
+
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={6000} // O tempo que o Snackbar ficará visível
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+              
+            
+            <Alert onClose={handleCloseSnackbar} variant="filled" severity={snackbarSeverity}>
+              {mensagemErro}
+            </Alert>
+          </Snackbar>
+
 
           {/* Diálogo de Confirmação de Exclusão */}
           <Dialog open={dialogOpen} onClose={handleDeleteDialogClose}>
