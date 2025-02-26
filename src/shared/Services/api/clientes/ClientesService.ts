@@ -1,9 +1,6 @@
 //src/shared/services/api/clientes/ClientesService.ts
-import { useState } from "react";
 import { Environment } from "../../../environments";
 import { Api } from "../axios-config";
-import { errorInterceptor } from "../axios-config/interceptors";
-import { Snackbar, Alert } from '@mui/material';
 
 export interface IListagemCliente {
   idCliente: number;
@@ -46,9 +43,6 @@ interface Cliente {
   Celular: string;
 }
 
-
-
-
 const getAll = async (page = 1, filter = ''): Promise<TClienteComTotalCount | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
@@ -90,29 +84,27 @@ const getById = async (idCliente: number): Promise<IDetalheCliente | Error> => {
   }
 };
 
-
-
-const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<number | Error> => {
+const create = async (dados: Omit<IDetalheCliente, 'idCliente'>): Promise<void | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-    const response = await Api.post('/clientes', dados, config); // Faz a requisição
-
-    // Verifica se a resposta foi bem-sucedida
-    if (response.data) {
-      return response.data.idCliente;
-    } else {
-      return new Error('Erro ao criar o registro.');
+    const resp = await Api.post('/clientes', dados, config); // Faz a requisição
+    if (resp.status === 201) {
+      // Exibe uma mensagem de sucesso (Snackbar, por exemplo)
+      return  resp.data.message; // Finaliza a função sem erros
     }
-  } catch (error: any) {
-    // Se o backend retornar uma mensagem de erro, capturamos aqui
-    if (error.response && error.response.data && error.response.data.message) {
-      return new Error(error.response.data.message); // Retorna a mensagem de erro do backend
-    } else {
-      return new Error(error.message || 'Erro ao criar o registro.');
+    
     }
+    
+   catch (error) {
+    if (error.response) {
+      // Define a mensagem de erro e exibe o Snackbar
+      throw error;
+      //alert(error.response.data.message);
+    } 
   }
-};
+}
+
 
 const UpdateById = async (id: number, dados: IDetalheCliente): Promise<void | Error> => {
   try {
@@ -149,36 +141,6 @@ const deleteById = async (id: number): Promise<void | Error> => {
 };
 
 
-// const getIdLojaToken = (): number => {
-//   // 1. Recuperar o token do sessionStorage
-//   const token = sessionStorage.getItem('token');
-//   //console.log(token);
-
-//   if (token) {
-//     try {
-//       // 2. Decodificar o token JWT
-//       const payloadBase64 = token.split('.')[1]; // O payload é a segunda parte do token
-//       console.log("Base64 : ",payloadBase64);
-//       const payloadJson = atob(payloadBase64); // Decodifica de Base64 para string JSON
-//       console.log("STRING : ",payloadJson);
-//       const payload = JSON.parse(payloadJson); // Converte a string JSON para objeto
-//       console.log("JSON : ",payload);
-
-//       // 3. Extrair o idLojaToken e converter para número
-//       const idLojaToken2 = payload.idlojaToken;
-//       console.log("kasjhdfkjsahdfk : ",idLojaToken2);
-//       if (idLojaToken2) {
-//         console.log("Number : ", parseInt(idLojaToken2, 10));
-//         return parseInt(idLojaToken2, 10); // Retorna o valor convertido para número
-//       }
-//     } catch (error) {
-//       console.error('Erro ao decodificar o token:', error);
-//     }
-//   }
-
-//   // Retorna null caso o token não exista ou ocorra um erro
-//   return 0;
-// };
 
 export const ClientesService = {
     

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
   Button,
   Paper,
   TextField,
@@ -21,16 +20,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
 import { LayoutBaseDePagina } from '../../shared/layouts/LayoutBaseDePaginas';
 import { FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
-import 'dayjs/locale/pt-br';
-import { ptBR } from '@mui/material/locale';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { IMaskInput } from 'react-imask';
 import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { applyMask } from '../../shared/tools/validators';
+import 'dayjs/locale/pt-br';
+import { ptBR } from '@mui/material/locale';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 
 interface IDetalheCliente {
   idCliente: number;
@@ -90,7 +89,6 @@ export const DetalheCliente: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
   const [dataNascimento, setDataNascimento] = React.useState<Dayjs | null>(cliente.Data_Nascimento ? dayjs(cliente.Data_Nascimento) : null);
-  const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
 
   const [cpfCnpjMasked, setCpfCnpjMasked] = useState(''); // estado separado para exibir a máscara
@@ -111,43 +109,10 @@ export const DetalheCliente: React.FC = () => {
     setOpenSnackbar(false);
   
     // Após fechar o snackbar, navega para a rota de clientes
-    navigate('/clientes');
+   // navigate('/clientes');
   };
 
-
-
-
-  const applyMask = (value: string) => {
-    // Remove caracteres não numéricos
-    const cleanedValue = value.replace(/\D/g, '');
-
-    // Aplica a máscara de CPF ou CNPJ
-    if (cleanedValue.length <= 11) {
-      return cleanedValue
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})/, '$1-$2')
-        .replace(/(-\d{2})\d+?$/, '$1');
-    } else {
-      return cleanedValue
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2')
-        .replace(/(-\d{2})\d+?$/, '$1');
-    }
-  };
-
-
-
-  // // Função para determinar se é CPF ou CNPJ e aplicar a máscara
-  // const getMask = (value: string) => {
-  //   // Verifica o tamanho do valor inserido para determinar se é CPF ou CNPJ
-  //   return value.length <= 11 ? '999.999.999-99' : '99.999.999/9999-99';
-  // };
-
-
-  const handleDataNascimentoChange = (date: Dayjs | null) => {
+    const handleDataNascimentoChange = (date: Dayjs | null) => {
     setDataNascimento(date);
     if (date) {
       const formattedDate = date.format('YYYY-MM-DD');
@@ -192,41 +157,6 @@ export const DetalheCliente: React.FC = () => {
   };
 
 
-
-
-  useEffect(() => {
-    const fetchCliente = async () => {
-      try {
-        if (idCliente && idCliente !== 'novo') {
-          const idClienteNumber = Number(idCliente);
-          if (!isNaN(idClienteNumber)) {
-            const response = await ClientesService.getById(idClienteNumber);
-            if (response instanceof Error) {
-              console.error('Erro ao buscar cliente:', response.message);
-              alert('Erro ao buscar cliente: ' + response.message);
-            } else {
-              setCliente({
-                ...cliente,
-                ...response,
-              });
-              setCpfCnpjMasked(applyMask(response.CPF_CNPJ)); // Aplica a máscara ao carregar o cliente
-              if (response.Data_Nascimento) {
-                setDataNascimento(dayjs(response.Data_Nascimento));
-              }
-            }
-          } else {
-            console.error('ID de cliente inválido:', idCliente);
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar os dados do cliente:', error);
-        alert('Erro ao buscar os dados do cliente.');
-      }
-    };
-
-    fetchCliente();
-  }, [idCliente]);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -247,15 +177,91 @@ export const DetalheCliente: React.FC = () => {
   };
 
 
-  // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = event.target;
-
-  
-
-
   const handleCriarCliente = async () => {
     try {
       if (idCliente === 'novo') {
+         // Verifica campos obrigatórios
+         if (!cliente.Nome) {
+          setMensagemErro('Por favor, insira um nome válido.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+        if (!cliente.Data_Nascimento) {
+          setMensagemErro('Por favor, preencha a data de nascimento.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+        if ( !cliente.Tipo_Cliente) {
+          setMensagemErro('Por favor, escolha um tipo de cliente.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+
+        // Verificação de formato de e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cliente.Email) || !cliente.Email ) {
+          setMensagemErro('Por favor, insira um e-mail válido.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+           //alert('Por favor, insira um e-mail válido.');
+          return;
+        }
+
+        //Validação CPF_CNPJ
+        if (cliente.CPF_CNPJ && cpf.isValid(cliente.CPF_CNPJ) === false && cnpj.isValid(cliente.CPF_CNPJ) === false || !cliente.CPF_CNPJ) {
+          setMensagemErro('Por favor, confira o CPF ou CNPJ digitado.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, confira o CPF ou CNPJ digitado.');
+          return;
+        }
+
+        // Criação do cliente
+        const { idCliente, ...clienteSemId } = cliente;
+        const clienteCriado = await ClientesService.create(clienteSemId);
+
+        if (clienteCriado instanceof Error) {
+          setMensagemErro(clienteCriado.message);
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          
+        } else {
+          setCliente(cliente); // Atualiza o estado com o cliente retornado
+          setMensagemErro('Registro criado com sucesso!');
+          setSnackbarSeverity('success');
+          setOpenSnackbar(true);
+          
+        }
+      }
+    } catch (error) {
+
+      if (error.response) {
+        setMensagemErro(error.response.data.message);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        //navigate('/clientes');
+      } else {
+        setMensagemErro('Erro desconhecido ao criar registro.');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        //navigate('/clientes');
+      }
+
+      return;
+    
+    }
+  };
+
+  const handleSaveEFechar = async () => {
+    try {
+      if (idCliente && idCliente !== 'novo') {
+
         // Verifica campos obrigatórios
         if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
           alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
@@ -276,22 +282,6 @@ export const DetalheCliente: React.FC = () => {
 
         }
 
-        // Criação do cliente
-        const { idCliente, ...clienteSemId } = cliente;
-        await ClientesService.create(clienteSemId);
-        alert('Cliente criado com sucesso!');
-        navigate('/clientes');
-      }
-    } catch (error) {
-      return;
-      // Exibe o erro vindo do backend
-      //alert(error.response.message); // Mostra a mensagem do erro
-    }
-  };
-
-  const handleSaveEFechar = async () => {
-    try {
-      if (idCliente && idCliente !== 'novo') {
         const idClienteNumber = Number(idCliente);
        if (!isNaN(idClienteNumber)) 
        {
@@ -333,19 +323,68 @@ export const DetalheCliente: React.FC = () => {
   const handleSave = async () => {
     try {
       if (idCliente && idCliente !== 'novo') {
-        const idClienteNumber = Number(idCliente);
-        if (!isNaN(idClienteNumber)) {
-          const resp = await ClientesService.UpdateById(idClienteNumber, cliente);
-          
-          if ((resp as { message: string }).message) {
-            setMensagemErro((resp as { message: string }).message); // Define a mensagem de sucesso vinda do backend
-            setSnackbarSeverity('success');
-            setOpenSnackbar(true);
-            
-          }
-          alert('Cliente o!');
-        
+
+        // Verifica campos obrigatórios
+        if (!cliente.Nome) {
+          setMensagemErro('Por favor, insira um nome válido.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
         }
+        if (!cliente.Data_Nascimento) {
+          setMensagemErro('Por favor, preencha a data de nascimento.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+        if ( !cliente.Tipo_Cliente) {
+          setMensagemErro('Por favor, escolha um tipo de cliente.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
+          return;
+        }
+
+        // Verificação de formato de e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cliente.Email) || !cliente.Email ) {
+          setMensagemErro('Por favor, insira um e-mail válido.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+           //alert('Por favor, insira um e-mail válido.');
+          return;
+        }
+
+        //Validação CPF_CNPJ
+        if (cliente.CPF_CNPJ && cpf.isValid(cliente.CPF_CNPJ) === false && cnpj.isValid(cliente.CPF_CNPJ) === false || !cliente.CPF_CNPJ) {
+          setMensagemErro('Por favor, confira o CPF ou CNPJ digitado.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          //alert('Por favor, confira o CPF ou CNPJ digitado.');
+          return;
+
+        }
+
+        const idClienteNumber = Number(idCliente);
+       if (!isNaN(idClienteNumber)) 
+       {
+         const clienteAtualizado =  await ClientesService.UpdateById(idClienteNumber, cliente);
+
+         if (clienteAtualizado instanceof Error) {
+          setMensagemErro(clienteAtualizado.message);
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+          
+        } else {
+          setCliente(cliente); // Atualiza o estado com o cliente retornado
+          setMensagemErro('Cliente atualizado com sucesso!');
+          setSnackbarSeverity('success');
+          setOpenSnackbar(true);
+          
+        }
+       }
       }
     } catch (error) {
       
@@ -353,23 +392,54 @@ export const DetalheCliente: React.FC = () => {
         setMensagemErro(error.response.data.message);
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
-        alert('asdfsErro ao salvar cliente!');
-
+        //navigate('/clientes');
       } else {
         setMensagemErro('Erro desconhecido ao atualizar o cliente.');
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
+        //navigate('/clientes');
       }
-      
       return;
     }
   };
 
 
-
   const handleCancel = () => {
     navigate('/clientes');
   };
+
+  useEffect(() => {
+    const fetchCliente = async () => {
+      try {
+        if (idCliente && idCliente !== 'novo') {
+          const idClienteNumber = Number(idCliente);
+          if (!isNaN(idClienteNumber)) {
+            const response = await ClientesService.getById(idClienteNumber);
+            if (response instanceof Error) {
+              console.error('Erro ao buscar cliente:', response.message);
+              alert('Erro ao buscar cliente: ' + response.message);
+            } else {
+              setCliente({
+                ...cliente,
+                ...response,
+              });
+              setCpfCnpjMasked(applyMask(response.CPF_CNPJ)); // Aplica a máscara ao carregar o cliente
+              if (response.Data_Nascimento) {
+                setDataNascimento(dayjs(response.Data_Nascimento));
+              }
+            }
+          } else {
+            console.error('ID de cliente inválido:', idCliente);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao buscar os dados do cliente:', error);
+        alert('Erro ao buscar os dados do cliente.');
+      }
+    };
+
+    fetchCliente();
+  }, [idCliente]);
 
   
 
@@ -382,7 +452,8 @@ export const DetalheCliente: React.FC = () => {
           barraDeFerramentas={
             <FerramentasDeDetalhe
               mostrarBotaoNovo={false}
-              mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
+              //mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
+              mostrarBotaoSalvarEFechar={false}
               mostrarBotaoSalvar={idCliente !== 'novo'}
               mostrarBotaoCriar={idCliente === 'novo'}
               mostrarBotaoApagar={idCliente !== 'novo'}
@@ -631,9 +702,7 @@ export const DetalheCliente: React.FC = () => {
             onClose={handleCloseSnackbar}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-              
-            
-            <Alert onClose={handleCloseSnackbar} variant="filled" severity={snackbarSeverity}>
+           <Alert onClose={handleCloseSnackbar} variant="filled" severity={snackbarSeverity}>
               {mensagemErro}
             </Alert>
           </Snackbar>
