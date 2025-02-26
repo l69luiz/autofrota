@@ -713,7 +713,11 @@ export const DetalheCliente: React.FC = () => {
                     value={dataNascimento}
                     onChange={handleDataNascimentoChange}
                     views={['day', 'month', 'year']}
-
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,  // Faz o TextField ocupar 100% da largura
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>

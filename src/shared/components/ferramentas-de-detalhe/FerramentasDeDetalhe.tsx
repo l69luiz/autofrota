@@ -96,7 +96,7 @@ const theme = useTheme();
 
 
                 {(mostrarBotaoCriar && !mostrarBotaoCriarCarregando)&&(<Button
-                variant='outlined'
+                variant='contained'
                 disableElevation
                 color='primary'
                 onClick={aoClicarEmCriar}
