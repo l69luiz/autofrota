@@ -14,7 +14,9 @@ import {
   DialogActions,
   Grid,
   Snackbar,
-  Alert
+  Alert,
+  CircularProgress,
+  Autocomplete
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
@@ -29,6 +31,11 @@ import { applyMask } from '../../shared/tools/validators';
 import 'dayjs/locale/pt-br';
 import { ptBR } from '@mui/material/locale';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import cep from 'cep-promise';
+import { InputAdornment, IconButton } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search'; // Ícone de busca
+import { estados } from '../../shared/tools/estados';
+import axios from 'axios';
 
 
 interface IDetalheCliente {
@@ -38,6 +45,7 @@ interface IDetalheCliente {
   Rua: string;
   Numero: string;
   Bairro: string;
+  Estado: string,
   Cidade: string;
   Celular: string;
   Celular2: string;
@@ -50,10 +58,11 @@ interface IDetalheCliente {
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
+  CEP: string;
 }
 
 export const DetalheCliente: React.FC = () => {
-  
+
   const [value, setValue] = React.useState<Dayjs | null>(dayjs());
   const { idCliente } = useParams<'idCliente'>();
   const navigate = useNavigate();
@@ -65,6 +74,7 @@ export const DetalheCliente: React.FC = () => {
     Rua: '',
     Numero: '',
     Bairro: '',
+    Estado: '',
     Cidade: '',
     Celular: '',
     Celular2: '',
@@ -77,6 +87,7 @@ export const DetalheCliente: React.FC = () => {
     Data_Nascimento: '',
     Sexo: '',
     Estado_Civil: '',
+    CEP: '',
   });
 
   const tiposCliente = ['Pessoa Física', 'Pessoa Jurídica'];
@@ -85,34 +96,55 @@ export const DetalheCliente: React.FC = () => {
   const clienteGrupo = ['Comum', 'Prioritário', 'Funcionário', 'VIP', 'Devedor'];
   const clienteStatusAutoRastrear = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
   const clienteStatusLoja = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
   const [dataNascimento, setDataNascimento] = React.useState<Dayjs | null>(cliente.Data_Nascimento ? dayjs(cliente.Data_Nascimento) : null);
   const [emailError, setEmailError] = useState('');
-
   const [cpfCnpjMasked, setCpfCnpjMasked] = useState(''); // estado separado para exibir a máscara
-
-
   const [openSnackbar, setOpenSnackbar] = useState(false); // Controla a exibição do Snackbar
   const [mensagemErro, setMensagemErro] = useState(''); // Guarda a mensagem de erro
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning' | 'info' | 'success'> ('error'); // Severidade dinâmica
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning' | 'info' | 'success'>('error'); // Severidade dinâmica
+
+  const [cidades, setCidades] = useState<string[]>([]);
+  const [carregandoCidades, setCarregandoCidades] = useState<boolean>(false);
+
+
 
   // const handleCloseSnackbar = () => {
   //   setOpenSnackbar(false);
   // };
+
+  const buscarCEP = async (cepValue: string) => {
+    try {
+      const cepData = await cep(cepValue);
+      setCliente((prevCliente) => ({
+        ...prevCliente,
+        Rua: cepData.street || '',
+        Bairro: cepData.neighborhood || '',
+        Estado: cepData.state || '',
+        Cidade: cepData.city || '',
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error);
+      setMensagemErro('CEP não encontrado ou inválido.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    }
+  };
+
+
 
   const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenSnackbar(false);
-  
+
     // Após fechar o snackbar, navega para a rota de clientes
-   // navigate('/clientes');
+    // navigate('/clientes');
   };
 
-    const handleDataNascimentoChange = (date: Dayjs | null) => {
+  const handleDataNascimentoChange = (date: Dayjs | null) => {
     setDataNascimento(date);
     if (date) {
       const formattedDate = date.format('YYYY-MM-DD');
@@ -176,12 +208,11 @@ export const DetalheCliente: React.FC = () => {
     }
   };
 
-
   const handleCriarCliente = async () => {
     try {
       if (idCliente === 'novo') {
-         // Verifica campos obrigatórios
-         if (!cliente.Nome) {
+        // Verifica campos obrigatórios
+        if (!cliente.Nome) {
           setMensagemErro('Por favor, insira um nome válido.');
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
@@ -195,7 +226,7 @@ export const DetalheCliente: React.FC = () => {
           //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
           return;
         }
-        if ( !cliente.Tipo_Cliente) {
+        if (!cliente.Tipo_Cliente) {
           setMensagemErro('Por favor, escolha um tipo de cliente.');
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
@@ -205,11 +236,11 @@ export const DetalheCliente: React.FC = () => {
 
         // Verificação de formato de e-mail
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(cliente.Email) || !cliente.Email ) {
+        if (!emailRegex.test(cliente.Email) || !cliente.Email) {
           setMensagemErro('Por favor, insira um e-mail válido.');
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
-           //alert('Por favor, insira um e-mail válido.');
+          //alert('Por favor, insira um e-mail válido.');
           return;
         }
 
@@ -230,13 +261,13 @@ export const DetalheCliente: React.FC = () => {
           setMensagemErro(clienteCriado.message);
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
-          
+
         } else {
           setCliente(cliente); // Atualiza o estado com o cliente retornado
           setMensagemErro('Registro criado com sucesso!');
           setSnackbarSeverity('success');
           setOpenSnackbar(true);
-          
+
         }
       }
     } catch (error) {
@@ -254,7 +285,7 @@ export const DetalheCliente: React.FC = () => {
       }
 
       return;
-    
+
     }
   };
 
@@ -283,27 +314,26 @@ export const DetalheCliente: React.FC = () => {
         }
 
         const idClienteNumber = Number(idCliente);
-       if (!isNaN(idClienteNumber)) 
-       {
-         const clienteAtualizado =  await ClientesService.UpdateById(idClienteNumber, cliente);
+        if (!isNaN(idClienteNumber)) {
+          const clienteAtualizado = await ClientesService.UpdateById(idClienteNumber, cliente);
 
-         if (clienteAtualizado instanceof Error) {
-          setMensagemErro(clienteAtualizado.message);
-          setSnackbarSeverity('error');
-          setOpenSnackbar(true);
-          //navigate('/clientes');
-        } else {
-          setCliente(cliente); // Atualiza o estado com o cliente retornado
-          setMensagemErro('Cliente atualizado com sucesso!');
-          setSnackbarSeverity('success');
-          //navigate('/clientes');
-          setOpenSnackbar(true);
-          
+          if (clienteAtualizado instanceof Error) {
+            setMensagemErro(clienteAtualizado.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            //navigate('/clientes');
+          } else {
+            setCliente(cliente); // Atualiza o estado com o cliente retornado
+            setMensagemErro('Cliente atualizado com sucesso!');
+            setSnackbarSeverity('success');
+            //navigate('/clientes');
+            setOpenSnackbar(true);
+
+          }
         }
-       }
       }
     } catch (error) {
-      
+
       if (error.response) {
         setMensagemErro(error.response.data.message);
         setSnackbarSeverity('error');
@@ -339,7 +369,7 @@ export const DetalheCliente: React.FC = () => {
           //alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
           return;
         }
-        if ( !cliente.Tipo_Cliente) {
+        if (!cliente.Tipo_Cliente) {
           setMensagemErro('Por favor, escolha um tipo de cliente.');
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
@@ -349,11 +379,11 @@ export const DetalheCliente: React.FC = () => {
 
         // Verificação de formato de e-mail
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(cliente.Email) || !cliente.Email ) {
+        if (!emailRegex.test(cliente.Email) || !cliente.Email) {
           setMensagemErro('Por favor, insira um e-mail válido.');
           setSnackbarSeverity('error');
           setOpenSnackbar(true);
-           //alert('Por favor, insira um e-mail válido.');
+          //alert('Por favor, insira um e-mail válido.');
           return;
         }
 
@@ -368,26 +398,25 @@ export const DetalheCliente: React.FC = () => {
         }
 
         const idClienteNumber = Number(idCliente);
-       if (!isNaN(idClienteNumber)) 
-       {
-         const clienteAtualizado =  await ClientesService.UpdateById(idClienteNumber, cliente);
+        if (!isNaN(idClienteNumber)) {
+          const clienteAtualizado = await ClientesService.UpdateById(idClienteNumber, cliente);
 
-         if (clienteAtualizado instanceof Error) {
-          setMensagemErro(clienteAtualizado.message);
-          setSnackbarSeverity('error');
-          setOpenSnackbar(true);
-          
-        } else {
-          setCliente(cliente); // Atualiza o estado com o cliente retornado
-          setMensagemErro('Cliente atualizado com sucesso!');
-          setSnackbarSeverity('success');
-          setOpenSnackbar(true);
-          
+          if (clienteAtualizado instanceof Error) {
+            setMensagemErro(clienteAtualizado.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+
+          } else {
+            setCliente(cliente); // Atualiza o estado com o cliente retornado
+            setMensagemErro('Cliente atualizado com sucesso!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+
+          }
         }
-       }
       }
     } catch (error) {
-      
+
       if (error.response) {
         setMensagemErro(error.response.data.message);
         setSnackbarSeverity('error');
@@ -441,7 +470,32 @@ export const DetalheCliente: React.FC = () => {
     fetchCliente();
   }, [idCliente]);
 
-  
+
+  // Busca as cidades ao selecionar um estado
+  useEffect(() => {
+    const buscarCidades = async () => {
+      if (cliente.Estado) {
+        setCarregandoCidades(true);
+        try {
+          const response = await axios.get(
+            `https://brasilapi.com.br/api/ibge/municipios/v1/${cliente.Estado}`
+          );
+          setCidades(response.data.map((cidade: any) => cidade.nome));
+        } catch (error) {
+          console.error('Erro ao buscar cidades:', error);
+          setMensagemErro('Erro ao buscar cidades. Tente novamente.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+        } finally {
+          setCarregandoCidades(false);
+        }
+      }
+    };
+
+    buscarCidades();
+  }, [cliente.Estado]);
+
+
 
 
   return (
@@ -497,6 +551,29 @@ export const DetalheCliente: React.FC = () => {
                 />
               </Grid>
 
+              {/* Busca CEP */}
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  label="CEP"
+                  name="CEP"
+                  value={cliente.CEP || ''}
+                  onChange={handleInputChange}
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => buscarCEP(cliente.CEP)}
+                          edge="end"
+                          sx={{ color: 'primary.main' }} // Estilização opcional
+                        >
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
 
               {/* Rua */}
               <Grid item xs={12} sm={6} md={4}>
@@ -534,11 +611,49 @@ export const DetalheCliente: React.FC = () => {
               {/* Cidade */}
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
-                  label="Cidade"
-                  name="Cidade"
-                  value={cliente.Cidade}
+                  label="Estado"
+                  name="Estado"
+                  value={cliente.Estado}
                   onChange={handleInputChange}
+                  select
                   fullWidth
+                >
+                  {estados.map((estado) => (
+                    <MenuItem key={estado.sigla} value={estado.sigla}>
+                      {estado.nome}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={4}>
+                <Autocomplete
+                  options={cidades}
+                  loading={carregandoCidades}
+                  value={cliente.Cidade}
+                  onChange={(event, newValue) => {
+                    setCliente((prevCliente) => ({
+                      ...prevCliente,
+                      Cidade: newValue || '',
+                    }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Cidade"
+                      variant="outlined"
+                      fullWidth
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {carregandoCidades ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
                 />
               </Grid>
 
@@ -701,8 +816,8 @@ export const DetalheCliente: React.FC = () => {
             autoHideDuration={6000} // O tempo que o Snackbar ficará visível
             onClose={handleCloseSnackbar}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-           <Alert onClose={handleCloseSnackbar} variant="filled" severity={snackbarSeverity}>
+          >
+            <Alert onClose={handleCloseSnackbar} variant="filled" severity={snackbarSeverity}>
               {mensagemErro}
             </Alert>
           </Snackbar>
