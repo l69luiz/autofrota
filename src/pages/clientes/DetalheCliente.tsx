@@ -36,12 +36,14 @@ import { InputAdornment, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search'; // Ícone de busca
 import { estados } from '../../shared/tools/estados';
 import axios from 'axios';
+import { cidadesMG } from '../../shared/tools/cidadesMG';
 
 
 interface IDetalheCliente {
   idCliente: number;
   Nome: string;
   CPF_CNPJ: string;
+  CEP: string;
   Rua: string;
   Numero: string;
   Bairro: string;
@@ -58,7 +60,6 @@ interface IDetalheCliente {
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
-  CEP: string;
 }
 
 export const DetalheCliente: React.FC = () => {
@@ -71,6 +72,7 @@ export const DetalheCliente: React.FC = () => {
     idCliente: Number(idCliente),
     Nome: '',
     CPF_CNPJ: '',
+    CEP: '',
     Rua: '',
     Numero: '',
     Bairro: '',
@@ -87,7 +89,7 @@ export const DetalheCliente: React.FC = () => {
     Data_Nascimento: '',
     Sexo: '',
     Estado_Civil: '',
-    CEP: '',
+
   });
 
   const tiposCliente = ['Pessoa Física', 'Pessoa Jurídica'];
@@ -474,13 +476,29 @@ export const DetalheCliente: React.FC = () => {
   // Busca as cidades ao selecionar um estado
   useEffect(() => {
     const buscarCidades = async () => {
-      if (cliente.Estado) {
-        setCarregandoCidades(true);
+      if (cliente.Estado && cliente.Estado !== "MG") {
+       
         try {
+          setCarregandoCidades(true);
           const response = await axios.get(
             `https://brasilapi.com.br/api/ibge/municipios/v1/${cliente.Estado}`
           );
           setCidades(response.data.map((cidade: any) => cidade.nome));
+        } catch (error) {
+          console.error('Erro ao buscar cidades:', error);
+          setMensagemErro('Erro ao buscar cidades. Tente novamente.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+        } finally {
+          setCarregandoCidades(false);
+        }
+      }else{
+        try {
+          setCarregandoCidades(true);
+          // const response = await axios.get(
+          //   `https://brasilapi.com.br/api/ibge/municipios/v1/${cliente.Estado}`
+          // );
+          setCidades(cidadesMG.map((cidade: any) => cidade.nome));
         } catch (error) {
           console.error('Erro ao buscar cidades:', error);
           setMensagemErro('Erro ao buscar cidades. Tente novamente.');

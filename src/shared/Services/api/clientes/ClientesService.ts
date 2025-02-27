@@ -13,9 +13,11 @@ export interface IDetalheCliente {
   idCliente: number;
   Nome: string;
   CPF_CNPJ: string;
+  CEP: string;
   Rua: string;
   Numero: string;
   Bairro: string;
+  Estado: string;
   Cidade: string;
   Celular: string;
   Celular2: string;
@@ -36,12 +38,12 @@ export type TClienteComTotalCount = {
   totalCount: number;
 };
 
-interface Cliente {
-  idCliente: number;
-  Nome: string;
-  Email: string;
-  Celular: string;
-}
+// interface Cliente {
+//   idCliente: number;
+//   Nome: string;
+//   Email: string;
+//   Celular: string;
+// }
 
 const getAll = async (page = 1, filter = ''): Promise<TClienteComTotalCount | Error> => {
   try {
