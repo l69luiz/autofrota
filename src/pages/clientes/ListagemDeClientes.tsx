@@ -24,6 +24,9 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import { AccessAlarm, ThreeDRotation, MoreHoriz, Edit } from '@mui/icons-material';
+
+//import { Payment, MoreHoriz} from '@mui/icons-material';
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { ClientesService, IListagemCliente } from "../../shared/services/api/clientes/ClientesService";
 import { LayoutBaseDePagina } from "../../shared/layouts/LayoutBaseDePaginas";
@@ -32,6 +35,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../shared/hooks";
 import { Api } from "../../shared/services/api/axios-config";
 import { Environment } from "../../shared/environments";
+import { blue, pink } from "@mui/material/colors";
 
 export const ListagemDeClientes: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -158,6 +162,7 @@ export const ListagemDeClientes: React.FC = () => {
             <TableRow>
               <TableCell align="center">Ações</TableCell>
               <TableCell>Nome</TableCell>
+              <TableCell>Celular</TableCell>
               <TableCell>Email</TableCell>
             </TableRow>
           </TableHead>
@@ -176,10 +181,14 @@ export const ListagemDeClientes: React.FC = () => {
                       <Icon>delete</Icon>
                     </IconButton>
                     <IconButton size="small" onClick={() => handleEdit(cliente.idCliente)}>
-                      <Icon>edit</Icon>
+                      <Edit/>
+                    </IconButton>
+                    <IconButton size="small" onClick={() => handleEdit(cliente.idCliente)}>
+                       <MoreHoriz sx={{ color: blue[500] }}/>
                     </IconButton>
                   </TableCell>
                   <TableCell>{cliente.Nome}</TableCell>
+                  <TableCell>{cliente.Celular}</TableCell>
                   <TableCell>{cliente.Email}</TableCell>
                 </TableRow>
               ))

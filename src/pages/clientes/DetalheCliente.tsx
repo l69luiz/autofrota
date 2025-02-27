@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Paper, TextField, Typography, MenuItem, Dialog, DialogTitle,
   DialogContent, DialogContentText, DialogActions, Grid, Snackbar, Alert,
-  CircularProgress, Autocomplete, Skeleton
+  CircularProgress, Autocomplete, Skeleton,
+  LinearProgress
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
@@ -425,7 +426,7 @@ export const DetalheCliente: React.FC = () => {
         //navigate('/clientes');
       }
       return;
-    }finally {
+    } finally {
       setIsSaving(false); // Finaliza o carregamento
     }
   };
@@ -538,7 +539,13 @@ export const DetalheCliente: React.FC = () => {
               aoClicarEmVoltar={handleCancel}
             />
           }
+
         >
+          {/* Adicionar o LinearProgress aqui */}
+          {isSaving && <LinearProgress />}
+          
+          {/* Restante do código */}
+
           <Paper elevation={3} sx={{ padding: 4, marginBottom: 4 }}>
             <Typography variant="h6" gutterBottom>
               Insira os dados do novo cliente:

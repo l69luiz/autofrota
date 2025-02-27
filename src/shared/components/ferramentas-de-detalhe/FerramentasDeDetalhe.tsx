@@ -77,7 +77,7 @@ const theme = useTheme();
                         Salvar
                     </Typography>
                 </Button>)}
-                {mostrarBotaoSalvarCarregando&&(<Skeleton width={110} height={60}/>)}
+                {mostrarBotaoSalvarCarregando&&(<Skeleton width={180} height={60}/>)}
 
 
                 {(mostrarBotaoSalvarEFechar && !mostrarBotaoSalvarEFecharCarregando && !smDown && !mdDown)&&(<Button
