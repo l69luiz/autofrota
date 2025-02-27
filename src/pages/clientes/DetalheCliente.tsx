@@ -2,21 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
-  Paper,
-  TextField,
-  Typography,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Grid,
-  Snackbar,
-  Alert,
-  CircularProgress,
-  Autocomplete
+  Button, Paper, TextField, Typography, MenuItem, Dialog, DialogTitle,
+  DialogContent, DialogContentText, DialogActions, Grid, Snackbar, Alert,
+  CircularProgress, Autocomplete, Skeleton
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ClientesService, IListagemCliente } from '../../shared/services/api/clientes/ClientesService';
@@ -109,6 +97,8 @@ export const DetalheCliente: React.FC = () => {
 
   const [cidades, setCidades] = useState<string[]>([]);
   const [carregandoCidades, setCarregandoCidades] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
 
 
@@ -212,6 +202,7 @@ export const DetalheCliente: React.FC = () => {
 
   const handleCriarCliente = async () => {
     try {
+      setIsSaving(true); // Inicia o carregamento
       if (idCliente === 'novo') {
         // Verifica campos obrigatórios
         if (!cliente.Nome) {
@@ -288,6 +279,8 @@ export const DetalheCliente: React.FC = () => {
 
       return;
 
+    } finally {
+      setIsSaving(false); // Finaliza o carregamento
     }
   };
 
@@ -354,6 +347,7 @@ export const DetalheCliente: React.FC = () => {
 
   const handleSave = async () => {
     try {
+      setIsSaving(true); // Inicia o carregamento
       if (idCliente && idCliente !== 'novo') {
 
         // Verifica campos obrigatórios
@@ -431,6 +425,8 @@ export const DetalheCliente: React.FC = () => {
         //navigate('/clientes');
       }
       return;
+    }finally {
+      setIsSaving(false); // Finaliza o carregamento
     }
   };
 
@@ -445,6 +441,7 @@ export const DetalheCliente: React.FC = () => {
         if (idCliente && idCliente !== 'novo') {
           const idClienteNumber = Number(idCliente);
           if (!isNaN(idClienteNumber)) {
+            setIsLoading(true); // Inicia o carregamento
             const response = await ClientesService.getById(idClienteNumber);
             if (response instanceof Error) {
               console.error('Erro ao buscar cliente:', response.message);
@@ -466,6 +463,8 @@ export const DetalheCliente: React.FC = () => {
       } catch (error) {
         console.error('Erro ao buscar os dados do cliente:', error);
         alert('Erro ao buscar os dados do cliente.');
+      } finally {
+        setIsLoading(false); // Finaliza o carregamento
       }
     };
 
@@ -477,7 +476,7 @@ export const DetalheCliente: React.FC = () => {
   useEffect(() => {
     const buscarCidades = async () => {
       if (cliente.Estado && cliente.Estado !== "MG") {
-       
+
         try {
           setCarregandoCidades(true);
           const response = await axios.get(
@@ -492,7 +491,7 @@ export const DetalheCliente: React.FC = () => {
         } finally {
           setCarregandoCidades(false);
         }
-      }else{
+      } else {
         try {
           setCarregandoCidades(true);
           // const response = await axios.get(
@@ -527,7 +526,9 @@ export const DetalheCliente: React.FC = () => {
               //mostrarBotaoSalvarEFechar={idCliente !== 'novo'}
               mostrarBotaoSalvarEFechar={false}
               mostrarBotaoSalvar={idCliente !== 'novo'}
+              mostrarBotaoSalvarCarregando={isSaving}
               mostrarBotaoCriar={idCliente === 'novo'}
+              mostrarBotaoCriarCarregando={isSaving}
               mostrarBotaoApagar={idCliente !== 'novo'}
               aoClicarEmNovo={() => navigate('/clientes/detalhe/novo')}
               aoClicarEmSalvarEFechar={handleSaveEFechar}
@@ -571,26 +572,30 @@ export const DetalheCliente: React.FC = () => {
 
               {/* Busca CEP */}
               <Grid item xs={12} sm={6} md={4}>
-                <TextField
-                  label="CEP"
-                  name="CEP"
-                  value={cliente.CEP || ''}
-                  onChange={handleInputChange}
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => buscarCEP(cliente.CEP)}
-                          edge="end"
-                          sx={{ color: 'primary.main' }} // Estilização opcional
-                        >
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                {isLoading ? (
+                  <Skeleton variant="rectangular" width="100%" height={56} />
+                ) : (
+                  <TextField
+                    label="CEP"
+                    name="CEP"
+                    value={cliente.CEP || ''}
+                    onChange={handleInputChange}
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => buscarCEP(cliente.CEP)}
+                            edge="end"
+                            sx={{ color: 'primary.main' }} // Estilização opcional
+                          >
+                            <SearchIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
               </Grid>
 
               {/* Rua */}
@@ -628,51 +633,59 @@ export const DetalheCliente: React.FC = () => {
 
               {/* Cidade */}
               <Grid item xs={12} sm={6} md={4}>
-                <TextField
-                  label="Estado"
-                  name="Estado"
-                  value={cliente.Estado}
-                  onChange={handleInputChange}
-                  select
-                  fullWidth
-                >
-                  {estados.map((estado) => (
-                    <MenuItem key={estado.sigla} value={estado.sigla}>
-                      {estado.nome}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                {isLoading ? (
+                  <Skeleton variant="rectangular" width="100%" height={56} />
+                ) : (
+                  <TextField
+                    label="Estado"
+                    name="Estado"
+                    value={cliente.Estado}
+                    onChange={handleInputChange}
+                    select
+                    fullWidth
+                  >
+                    {estados.map((estado) => (
+                      <MenuItem key={estado.sigla} value={estado.sigla}>
+                        {estado.nome}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <Autocomplete
-                  options={cidades}
-                  loading={carregandoCidades}
-                  value={cliente.Cidade}
-                  onChange={(event, newValue) => {
-                    setCliente((prevCliente) => ({
-                      ...prevCliente,
-                      Cidade: newValue || '',
-                    }));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Cidade"
-                      variant="outlined"
-                      fullWidth
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {carregandoCidades ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+                {isLoading ? (
+                  <Skeleton variant="rectangular" width="100%" height={56} />
+                ) : (
+                  <Autocomplete
+                    options={cidades}
+                    loading={carregandoCidades}
+                    value={cliente.Cidade}
+                    onChange={(event, newValue) => {
+                      setCliente((prevCliente) => ({
+                        ...prevCliente,
+                        Cidade: newValue || '',
+                      }));
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Cidade"
+                        variant="outlined"
+                        fullWidth
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {carregandoCidades ? <CircularProgress color="inherit" size={20} /> : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                )}
               </Grid>
 
               {/* Celular */}
