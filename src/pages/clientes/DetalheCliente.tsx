@@ -98,7 +98,7 @@ export const DetalheCliente: React.FC = () => {
 
   const [cidades, setCidades] = useState<string[]>([]);
   const [carregandoCidades, setCarregandoCidades] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(true);
+  //const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -109,6 +109,7 @@ export const DetalheCliente: React.FC = () => {
 
   const buscarCEP = async (cepValue: string) => {
     try {
+      setIsSaving(true); // Inicia o carregamento
       const cepData = await cep(cepValue);
       setCliente((prevCliente) => ({
         ...prevCliente,
@@ -122,6 +123,8 @@ export const DetalheCliente: React.FC = () => {
       setMensagemErro('CEP não encontrado ou inválido.');
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
+    } finally {
+      setIsSaving(false); // Finaliza o carregamento
     }
   };
 
@@ -166,6 +169,7 @@ export const DetalheCliente: React.FC = () => {
   const handleDelete = async () => {
     if (clienteIdParaDeletar) {
       try {
+        setIsSaving(true); // Inicia o carregamento
         const result = await ClientesService.deleteById(clienteIdParaDeletar);
         if (result instanceof Error) {
           alert(result.message);
@@ -177,6 +181,7 @@ export const DetalheCliente: React.FC = () => {
       } finally {
         setDialogOpen(false);
         setClienteIdParaDeletar(null);
+        setIsSaving(false); // Finaliza o carregamento
       }
     }
   };
@@ -285,67 +290,6 @@ export const DetalheCliente: React.FC = () => {
     }
   };
 
-  const handleSaveEFechar = async () => {
-    try {
-      if (idCliente && idCliente !== 'novo') {
-
-        // Verifica campos obrigatórios
-        if (!cliente.Nome || !cliente.CPF_CNPJ || !cliente.Email || !cliente.Data_Nascimento || !cliente.Tipo_Cliente) {
-          alert('Por favor, preencha todos os campos obrigatórios: Nome, CPF/CNPJ, Email, Data de Nascimento e Tipo de Cliente.');
-          return;
-        }
-
-        // Verificação de formato de e-mail
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(cliente.Email)) {
-          alert('Por favor, insira um e-mail válido.');
-          return;
-        }
-
-        //Validação CPF_CNPJ
-        if (cliente.CPF_CNPJ && cpf.isValid(cliente.CPF_CNPJ) === false && cnpj.isValid(cliente.CPF_CNPJ) === false) {
-          alert('Por favor, confira o CPF ou CNPJ digitado.');
-          return;
-
-        }
-
-        const idClienteNumber = Number(idCliente);
-        if (!isNaN(idClienteNumber)) {
-          const clienteAtualizado = await ClientesService.UpdateById(idClienteNumber, cliente);
-
-          if (clienteAtualizado instanceof Error) {
-            setMensagemErro(clienteAtualizado.message);
-            setSnackbarSeverity('error');
-            setOpenSnackbar(true);
-            //navigate('/clientes');
-          } else {
-            setCliente(cliente); // Atualiza o estado com o cliente retornado
-            setMensagemErro('Cliente atualizado com sucesso!');
-            setSnackbarSeverity('success');
-            //navigate('/clientes');
-            setOpenSnackbar(true);
-
-          }
-        }
-      }
-    } catch (error) {
-
-      if (error.response) {
-        setMensagemErro(error.response.data.message);
-        setSnackbarSeverity('error');
-        setOpenSnackbar(true);
-        //navigate('/clientes');
-      } else {
-        setMensagemErro('Erro desconhecido ao atualizar o cliente.');
-        setSnackbarSeverity('error');
-        setOpenSnackbar(true);
-        //navigate('/clientes');
-      }
-      return;
-    }
-  };
-
-
   const handleSave = async () => {
     try {
       setIsSaving(true); // Inicia o carregamento
@@ -431,7 +375,6 @@ export const DetalheCliente: React.FC = () => {
     }
   };
 
-
   const handleCancel = () => {
     navigate('/clientes');
   };
@@ -442,7 +385,7 @@ export const DetalheCliente: React.FC = () => {
         if (idCliente && idCliente !== 'novo') {
           const idClienteNumber = Number(idCliente);
           if (!isNaN(idClienteNumber)) {
-            setIsLoading(true); // Inicia o carregamento
+            setIsSaving(true); // Inicia o carregamento
             const response = await ClientesService.getById(idClienteNumber);
             if (response instanceof Error) {
               console.error('Erro ao buscar cliente:', response.message);
@@ -465,7 +408,7 @@ export const DetalheCliente: React.FC = () => {
         console.error('Erro ao buscar os dados do cliente:', error);
         alert('Erro ao buscar os dados do cliente.');
       } finally {
-        setIsLoading(false); // Finaliza o carregamento
+        setIsSaving(false); // Finaliza o carregamento
       }
     };
 
@@ -532,7 +475,7 @@ export const DetalheCliente: React.FC = () => {
               mostrarBotaoCriarCarregando={isSaving}
               mostrarBotaoApagar={idCliente !== 'novo'}
               aoClicarEmNovo={() => navigate('/clientes/detalhe/novo')}
-              aoClicarEmSalvarEFechar={handleSaveEFechar}
+              //aoClicarEmSalvarEFechar={handleSaveEFechar}
               aoClicarEmSalvar={handleSave}
               aoClicarEmCriar={handleCriarCliente}
               aoClicarEmApagar={() => handleDeleteDialogOpen(idClienteApagar)}
@@ -565,7 +508,6 @@ export const DetalheCliente: React.FC = () => {
 
               {/* CPF/CNPJ */}
               <Grid item xs={12} sm={6} md={4}>
-
                 {/* CPF/CNPJ */}
                 <TextField
                   label="CPF/CNPJ"
@@ -579,9 +521,6 @@ export const DetalheCliente: React.FC = () => {
 
               {/* Busca CEP */}
               <Grid item xs={12} sm={6} md={4}>
-                {isLoading ? (
-                  <Skeleton variant="rectangular" width="100%" height={56} />
-                ) : (
                   <TextField
                     label="CEP"
                     name="CEP"
@@ -602,7 +541,6 @@ export const DetalheCliente: React.FC = () => {
                       ),
                     }}
                   />
-                )}
               </Grid>
 
               {/* Rua */}
@@ -640,9 +578,6 @@ export const DetalheCliente: React.FC = () => {
 
               {/* Cidade */}
               <Grid item xs={12} sm={6} md={4}>
-                {isLoading ? (
-                  <Skeleton variant="rectangular" width="100%" height={56} />
-                ) : (
                   <TextField
                     label="Estado"
                     name="Estado"
@@ -657,13 +592,9 @@ export const DetalheCliente: React.FC = () => {
                       </MenuItem>
                     ))}
                   </TextField>
-                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                {isLoading ? (
-                  <Skeleton variant="rectangular" width="100%" height={56} />
-                ) : (
                   <Autocomplete
                     options={cidades}
                     loading={carregandoCidades}
@@ -692,7 +623,6 @@ export const DetalheCliente: React.FC = () => {
                       />
                     )}
                   />
-                )}
               </Grid>
 
               {/* Celular */}
