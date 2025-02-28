@@ -8,6 +8,7 @@ import { DetalheCliente } from '../pages/clientes/DetalheCliente';
 import { Dashboard} from '../pages';
 import Login from '../pages/Login';
 import PaginaInicial from '../pages/PaginaInicial';
+import { DetalheVeiculo } from '../pages/Veiculos/detalheVeiculo';
 
 
 export const AppRoutes: React.FC = () => {
@@ -24,6 +25,11 @@ export const AppRoutes: React.FC = () => {
         label: 'Clientes',
         icon: 'people',
         path: '/clientes',
+      },
+      {
+        label: 'Veiculos',
+        icon: 'car',
+        path: '/veiculos',
       },
     ]);
   }, [setDrawerOptions]);
@@ -49,6 +55,12 @@ export const AppRoutes: React.FC = () => {
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="clientes/detalhe/:idCliente" element={isAuthenticated === true ? <DetalheCliente /> : <Navigate to="/login" />} />
+
+      {/* Outras rotas protegidas */}
+      {/* <Route path="/veiculos" element={isAuthenticated === true ? <ListagemDeVeiculos /> : <Navigate to="/login" />} /> */}
+      
+      {/* Rota para editar cliente, utilizando o id do cliente */}
+      <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
       
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />
