@@ -15,7 +15,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 interface IDetalheVeiculo {
-    idVeiculo: number;
+    idVeiculo: number | null;
     Placa_Veiculo: string;
     Chassi: string;
     Renavan: string;
@@ -24,23 +24,23 @@ interface IDetalheVeiculo {
     Marca: string;
     Modelo: string;
     StatusVeiculo: string;
-    Ano_fab: number;
-    Ano_mod: number;
-    Nr_portas: number;
+    Ano_fab: number | null;
+    Ano_mod: number | null;
+    Nr_portas: number | null;
     CPF_CNPJ_Prop: string;
     Pot_Motor: string;
     CaminhoImgVeiculo: string;
-    Km_inicial: number;
-    Ar_cond: boolean;
-    Vidro_elet: boolean;
-    Multimidia: boolean;
-    Sensor_Re: boolean;
-    Vr_PadraoAluguel: number;
-    Trava_Elet: boolean;    
-    Alarme: boolean;
-    Valor_Entrada: number;
-    Valor_Fipe_Entrada: number;
-    Estoque_idEstoque: number;
+    Km_inicial: number | null;
+    Ar_cond: boolean | null;
+    Vidro_elet: boolean | null;
+    Multimidia: boolean | null;
+    Sensor_Re: boolean | null;
+    Vr_PadraoAluguel: number | null;
+    Trava_Elet: boolean | null;   
+    Alarme: boolean | null;
+    Valor_Entrada: number | null;
+    Valor_Fipe_Entrada: number | null;
+    Estoque_idEstoque: number | null;
 }
 
 
@@ -58,23 +58,23 @@ export const DetalheVeiculo: React.FC = () => {
         Marca: '',
         Modelo: '',
         StatusVeiculo: '',
-        Ano_fab: 0,
-        Ano_mod: 0,
-        Nr_portas: 2,
+        Ano_fab: null,
+        Ano_mod: null,
+        Nr_portas: null,
         CPF_CNPJ_Prop: '',
         Pot_Motor: '',
         CaminhoImgVeiculo: '',
-        Km_inicial: 0,
-        Ar_cond: false,
-        Vidro_elet: false,
-        Multimidia: false,
-        Sensor_Re: false,
-        Vr_PadraoAluguel: 0,
-        Trava_Elet: false,
-        Alarme: false,
-        Valor_Entrada: 0,
-        Valor_Fipe_Entrada: 0,
-        Estoque_idEstoque: 0,
+        Km_inicial: null,
+        Ar_cond: null,
+        Vidro_elet: null,
+        Multimidia: null,
+        Sensor_Re: null,
+        Vr_PadraoAluguel: null,
+        Trava_Elet: null,
+        Alarme: null,
+        Valor_Entrada: null,
+        Valor_Fipe_Entrada: null,
+        Estoque_idEstoque: null,
     });
 
     const [dialogOpen, setDialogOpen] = useState(false);
