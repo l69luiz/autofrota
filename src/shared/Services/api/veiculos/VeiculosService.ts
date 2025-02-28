@@ -8,6 +8,8 @@ export interface IListagemVeiculo {
   Marca: string;
   Modelo: string;
   StatusVeiculo: string;
+  Ano_fab: number;
+  Ano_mod: number;
 }
 
 export interface IDetalheVeiculo {
@@ -20,22 +22,22 @@ export interface IDetalheVeiculo {
   Marca: string;
   Modelo: string;
   StatusVeiculo: string;
-  Ano_fab: string;
-  Ano_mod: string;
-  Nr_portas: string;
+  Ano_fab: number;
+  Ano_mod: number;
+  Nr_portas: number;
   CPF_CNPJ_Prop: string;
   Pot_Motor: string;
   CaminhoImgVeiculo: string;
-  Km_inicial: string;
-  Ar_cond: string;
-  Vidro_elet: string;
-  Multimidia: string;
-  Sensor_Re: string;
-  Vr_PadraoAluguel: string;
-  Trava_Elet: string;
-  Alarme: string;
-  Valor_Entrada: string;
-  Valor_Fipe_Entrada: string;
+  Km_inicial: number;
+  Ar_cond: boolean;
+  Vidro_elet: boolean;
+  Multimidia: boolean;
+  Sensor_Re: boolean;
+  Vr_PadraoAluguel: number;
+  Trava_Elet: boolean;
+  Alarme: boolean;
+  Valor_Entrada: number;
+  Valor_Fipe_Entrada: number;
   Estoque_idEstoque: number;
 }
 
@@ -44,13 +46,24 @@ export type TVeiculoComTotalCount = {
   totalCount: number;
 };
 
-const getAll = async (page = 1, filter = ''): Promise<TVeiculoComTotalCount | Error> => {
+
+const getAll = async (
+  page = 1,
+  search = ''
+): Promise<TVeiculoComTotalCount | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-    
-    const urlRelativa = `/veiculos?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&modelo_like=${filter}`;
-    
+
+    // Constrói a URL relativa com base nos filtros fornecidos
+    const queryParams = new URLSearchParams();
+    queryParams.append('_page', page.toString());
+    queryParams.append('_limit', Environment.LIMITE_DE_LINHAS.toString());
+
+    if (search) queryParams.append('search', search); // Envia o parâmetro de busca
+
+    const urlRelativa = `/veiculos?${queryParams.toString()}`;
+
     const { data, headers } = await Api.get(urlRelativa, config); // Envia o token junto com a requisição
 
     if (data) {
@@ -60,12 +73,12 @@ const getAll = async (page = 1, filter = ''): Promise<TVeiculoComTotalCount | Er
       };
     }
     return new Error('Erro ao listar os registros.');
-    
   } catch (error) {
     console.error(error);
     return new Error((error as { message: string }).message || 'Erro ao listar os registros.');
   }
 };
+
 
 const getById = async (idVeiculo: number): Promise<IDetalheVeiculo | Error> => {
   try {
@@ -93,10 +106,13 @@ const create = async (dados: Omit<IDetalheVeiculo, 'idVeiculo'>): Promise<void |
     if (resp.status === 201) {
       return resp.data.message; // Finaliza a função sem erros
     }
-  } catch (error) {
+  }    catch (error) {
     if (error.response) {
+      // Define a mensagem de erro e exibe o Snackbar
+      //alert(error.response.data.message);
       throw error;
-    }
+      
+    } 
   }
 };
 

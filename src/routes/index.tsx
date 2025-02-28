@@ -9,6 +9,10 @@ import { Dashboard} from '../pages';
 import Login from '../pages/Login';
 import PaginaInicial from '../pages/PaginaInicial';
 import { DetalheVeiculo } from '../pages/Veiculos/detalheVeiculo';
+import { ListagemDeVeiculos } from '../pages/Veiculos/ListagemDeVeiculos';
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
 
 export const AppRoutes: React.FC = () => {
@@ -16,21 +20,20 @@ export const AppRoutes: React.FC = () => {
   
   useEffect(() => {
     setDrawerOptions([
-      {
-        label: 'Home',
-        icon: 'home',
-        path: '/pagina-inicial',
-      },
-      {
-        label: 'Clientes',
-        icon: 'people',
-        path: '/clientes',
-      },
-      {
-        label: 'Veiculos',
-        icon: 'car',
-        path: '/veiculos',
-      },
+
+      { icon: <HomeIcon />,
+        path: "/pagina-inicial", 
+        label: "Home" },
+
+      { icon: <PersonIcon />, 
+        path: "/clientes", 
+        label: "Clientes" },
+
+      { icon: <DirectionsCarIcon />,
+        path: "/veiculos", 
+        label: "Veiculos" },
+      
+     
     ]);
   }, [setDrawerOptions]);
 
@@ -57,7 +60,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="clientes/detalhe/:idCliente" element={isAuthenticated === true ? <DetalheCliente /> : <Navigate to="/login" />} />
 
       {/* Outras rotas protegidas */}
-      {/* <Route path="/veiculos" element={isAuthenticated === true ? <ListagemDeVeiculos /> : <Navigate to="/login" />} /> */}
+      <Route path="/veiculos" element={isAuthenticated === true ? <ListagemDeVeiculos /> : <Navigate to="/login" />} />
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
@@ -118,3 +121,20 @@ export const AppRoutes: React.FC = () => {
 // };
 
 // export default AppRoutes;
+
+
+// {
+//   icon: 'home',
+//   path: '/pagina-inicial',
+//   label: 'Home',
+// },
+// {
+//   label: 'Clientes',
+//   icon: 'people',
+//   path: '/clientes',
+// },
+// {
+//   label: 'Veiculos',
+//   icon: 'directions_car',
+//   path: '/veiculos',
+// },

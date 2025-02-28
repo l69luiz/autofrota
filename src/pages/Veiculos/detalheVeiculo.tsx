@@ -24,24 +24,25 @@ interface IDetalheVeiculo {
     Marca: string;
     Modelo: string;
     StatusVeiculo: string;
-    Ano_fab: string;
-    Ano_mod: string;
-    Nr_portas: string;
+    Ano_fab: number;
+    Ano_mod: number;
+    Nr_portas: number;
     CPF_CNPJ_Prop: string;
     Pot_Motor: string;
     CaminhoImgVeiculo: string;
-    Km_inicial: string;
-    Ar_cond: string;
-    Vidro_elet: string;
-    Multimidia: string;
-    Sensor_Re: string;
-    Vr_PadraoAluguel: string;
-    Trava_Elet: string;
-    Alarme: string;
-    Valor_Entrada: string;
-    Valor_Fipe_Entrada: string;
+    Km_inicial: number;
+    Ar_cond: boolean;
+    Vidro_elet: boolean;
+    Multimidia: boolean;
+    Sensor_Re: boolean;
+    Vr_PadraoAluguel: number;
+    Trava_Elet: boolean;    
+    Alarme: boolean;
+    Valor_Entrada: number;
+    Valor_Fipe_Entrada: number;
     Estoque_idEstoque: number;
 }
+
 
 export const DetalheVeiculo: React.FC = () => {
     const { idVeiculo } = useParams<'idVeiculo'>();
@@ -57,22 +58,22 @@ export const DetalheVeiculo: React.FC = () => {
         Marca: '',
         Modelo: '',
         StatusVeiculo: '',
-        Ano_fab: '',
-        Ano_mod: '',
-        Nr_portas: '',
+        Ano_fab: 0,
+        Ano_mod: 0,
+        Nr_portas: 2,
         CPF_CNPJ_Prop: '',
         Pot_Motor: '',
         CaminhoImgVeiculo: '',
-        Km_inicial: '',
-        Ar_cond: '',
-        Vidro_elet: '',
-        Multimidia: '',
-        Sensor_Re: '',
-        Vr_PadraoAluguel: '',
-        Trava_Elet: '',
-        Alarme: '',
-        Valor_Entrada: '',
-        Valor_Fipe_Entrada: '',
+        Km_inicial: 0,
+        Ar_cond: false,
+        Vidro_elet: false,
+        Multimidia: false,
+        Sensor_Re: false,
+        Vr_PadraoAluguel: 0,
+        Trava_Elet: false,
+        Alarme: false,
+        Valor_Entrada: 0,
+        Valor_Fipe_Entrada: 0,
         Estoque_idEstoque: 0,
     });
 
@@ -131,10 +132,53 @@ export const DetalheVeiculo: React.FC = () => {
     };
 
     const handleCriarVeiculo = async () => {
-        try {
-            setIsSaving(true);
-            if (idVeiculo === 'novo') {
-                const veiculoCriado = await VeiculosService.create(veiculo);
+      try {
+        setIsSaving(true); // Inicia o carregamento
+        if (idVeiculo === 'novo') {
+          // Verifica campos obrigatórios
+          if (!veiculo.Placa_Veiculo) {
+            setMensagemErro('Por favor, insira a placa do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+      
+          if (!veiculo.Chassi) {
+            setMensagemErro('Por favor, insira o chassi do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+      
+          if (!veiculo.Renavan) {
+            setMensagemErro('Por favor, insira o Renavam do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+      
+          if (!veiculo.Marca) {
+            setMensagemErro('Por favor, insira a marca do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+      
+          if (!veiculo.Modelo) {
+            setMensagemErro('Por favor, insira o modelo do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+      
+          if (!veiculo.Ano_fab) {
+            setMensagemErro('Por favor, insira o ano de fabricação do veículo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+          }
+                const { idVeiculo, ...veiculoSemId } = veiculo;
+                const veiculoCriado = await VeiculosService.create(veiculoSemId);
                 if (veiculoCriado instanceof Error) {
                     setMensagemErro(veiculoCriado.message);
                     setSnackbarSeverity('error');
@@ -147,7 +191,9 @@ export const DetalheVeiculo: React.FC = () => {
                 }
             }
         } catch (error) {
-            setMensagemErro('Erro ao criar veículo.');
+            //alert(error);
+            setMensagemErro(error.response.data.message);
+            //setMensagemErro('Erro ao criar veículo!');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
         } finally {
@@ -273,6 +319,10 @@ export const DetalheVeiculo: React.FC = () => {
 
 
   return (
+
+ <MenuLateral>
+       {/* O Dashboard será passado como children para o MenuLateral */}
+       <div style={{ flex: 1 }}> 
     <LayoutBaseDePagina
       titulo={idVeiculo === 'novo' ? 'Novo Veículo' : 'Detalhe do Veículo'}
       barraDeFerramentas={
@@ -606,5 +656,8 @@ export const DetalheVeiculo: React.FC = () => {
         </DialogActions>
       </Dialog>
     </LayoutBaseDePagina>
+    </div>
+</MenuLateral>
+
   );
 };

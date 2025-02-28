@@ -184,7 +184,7 @@ export const ListagemDeClientes: React.FC = () => {
                       <Edit/>
                     </IconButton>
                     <IconButton size="small" onClick={() => handleEdit(cliente.idCliente)}>
-                       <MoreHoriz sx={{ color: blue[500] }}/>
+                       <MoreHoriz/>
                     </IconButton>
                   </TableCell>
                   <TableCell>{cliente.Nome}</TableCell>

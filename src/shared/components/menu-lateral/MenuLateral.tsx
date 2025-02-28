@@ -13,7 +13,7 @@ import { useAppThemeContext, useDrawerContext } from "../../contexts";
 interface IListItemLinksProps {
   //children: React.ReactNode;
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   to: string;
   onClick: (() => void) | undefined;
 }
@@ -51,7 +51,7 @@ interface MenuLateralProviderProps {
 export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const { IsDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
+  const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const [openVeiculos, setOpenVeic] = React.useState(false);
   const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
   //const [openClientes, setOpenClien] = React.useState(false);
@@ -61,7 +61,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
   return (
     <>
-      <Drawer open={IsDrawerOpen} variant={smDown ? 'temporary' : 'permanent'} onClose={toggleDrawerOpen}>
+      <Drawer open={isDrawerOpen} variant={smDown ? 'temporary' : 'permanent'} onClose={toggleDrawerOpen}>
         <Box width={theme.spacing(28)} height="100%" display="flex" flexDirection="column">
           <Box width="100%" height={theme.spacing(20)} display="flex" alignItems="center" justifyContent="center">
             <Avatar
