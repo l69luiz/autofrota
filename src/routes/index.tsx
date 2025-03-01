@@ -13,6 +13,9 @@ import { ListagemDeVeiculos } from '../pages/Veiculos/ListagemDeVeiculos';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import AddBusinessIcon from '@mui/icons-material/AddBusiness';
+import { ListagemDeEstoques } from '../pages/estoques/ListagemDeEstoques';
+import { DetalheEstoque } from '../pages/estoques/DetalheEstoque';
 
 
 export const AppRoutes: React.FC = () => {
@@ -32,6 +35,11 @@ export const AppRoutes: React.FC = () => {
       { icon: <DirectionsCarIcon />,
         path: "/veiculos", 
         label: "Veiculos" },
+
+
+        { icon: <AddBusinessIcon />,
+        path: "/estoques", 
+        label: "Estoques" },
       
      
     ]);
@@ -64,6 +72,12 @@ export const AppRoutes: React.FC = () => {
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
+      
+      {/* Outras rotas protegidas */}
+      <Route path="/estoques" element={isAuthenticated === true ? <ListagemDeEstoques /> : <Navigate to="/login" />} />
+      
+      {/* Rota para editar cliente, utilizando o id do cliente */}
+      <Route path="estoques/detalhe/:idEstoque" element={isAuthenticated === true ? <DetalheEstoque /> : <Navigate to="/login" />} />
       
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />

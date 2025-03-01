@@ -62,6 +62,7 @@ export const ListagemDeVeiculos: React.FC = () => {
   };
 
   const handleEdit = useCallback((idVeiculo: number) => {
+    
     navigate(`/veiculos/detalhe/${idVeiculo}`);
   }, [navigate]);
 
