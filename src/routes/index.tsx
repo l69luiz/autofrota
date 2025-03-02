@@ -16,6 +16,9 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import { ListagemDeEstoques } from '../pages/estoques/ListagemDeEstoques';
 import { DetalheEstoque } from '../pages/estoques/DetalheEstoque';
+import { ListagemDeContasBancarias } from '../pages/contasbancarias/ListagemDeContasBancarias';
+import { DetalheContaBancaria } from '../pages/contasbancarias/DetalheContaBancaria';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 
 export const AppRoutes: React.FC = () => {
@@ -40,6 +43,10 @@ export const AppRoutes: React.FC = () => {
         { icon: <AddBusinessIcon />,
         path: "/estoques", 
         label: "Estoques" },
+        
+        { icon: <AccountBalanceIcon />,
+        path: "/contasbancarias", 
+        label: "Contas Bancarias" },
       
      
     ]);
@@ -78,6 +85,12 @@ export const AppRoutes: React.FC = () => {
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="estoques/detalhe/:idEstoque" element={isAuthenticated === true ? <DetalheEstoque /> : <Navigate to="/login" />} />
+     
+      {/* Outras rotas protegidas */}
+      <Route path="/contasbancarias" element={isAuthenticated === true ? <ListagemDeContasBancarias /> : <Navigate to="/login" />} />
+      
+      {/* Rota para editar contasbancarias, utilizando o id da contasbancarias */}
+      <Route path="contasbancarias/detalhe/:idContaBancaria" element={isAuthenticated === true ? <DetalheContaBancaria /> : <Navigate to="/login" />} />
       
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />
