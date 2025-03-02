@@ -11,7 +11,7 @@ export interface IListagemEstoque {
   Data_Abertura: Date | null;
   Status: string | null;
   Local: string | null;
-  Lojas_idLoja: number;
+  Empresas_idEmpresa: number;
 }
 
 // Interface para representar os detalhes de um estoque
@@ -23,7 +23,7 @@ export interface IDetalheEstoque {
   Data_Abertura: Date | null;
   Status: string | null;
   Local: string | null;
-  Lojas_idLoja: number | null;
+  Empresas_idEmpresa: number | null;
 }
 
 // Tipo para a resposta da API com paginação

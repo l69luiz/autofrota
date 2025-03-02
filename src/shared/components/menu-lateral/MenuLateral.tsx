@@ -6,7 +6,7 @@ import { Avatar, Box, Divider, Drawer, Icon, List, ListItem, ListItemButton, Lis
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
-import { useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
+import { Navigate, useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
 import { useAppThemeContext, useDrawerContext } from "../../contexts";
 
 
@@ -49,11 +49,17 @@ interface MenuLateralProviderProps {
 //  const [open, setOpen] = React.useState(true);
 
 export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) => {
+   const navigate = useNavigate();
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
+  const { isDrawerOpenSub, toggleDrawerOpenSub, drawerOptionsSub } = useDrawerContext();
   const [openVeiculos, setOpenVeic] = React.useState(false);
-  const handleClickVeic = () => { setOpenVeic(!openVeiculos); };
+  const handleClickVeic = () => {
+    setOpenVeic(!openVeiculos);
+    navigate("/veiculos");
+      
+    };
   //const [openClientes, setOpenClien] = React.useState(false);
   const { toggleTheme } = useAppThemeContext();
 
@@ -90,15 +96,47 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
                 ))}
 
+                <ListItemButton onClick={handleClickVeic}>
+                  <ListItemIcon>
+                    <Icon>directions_car</Icon>
+                  </ListItemIcon>
+                  <ListItemText primary="Frota" />
+                  {openVeiculos ? <ExpandLess /> : <ExpandMore /> }
+                </ListItemButton> 
+
+                <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                  <ListItemButton sx={{ pl: 4 }}>
+                  {drawerOptionsSub.map(drawerOptionsSub => (
+                    
+                  <ListItem disablePadding>
+                    <ListItemLink
+                      key={drawerOptionsSub.path}
+                      icon={drawerOptionsSub.icon}
+                      to={drawerOptionsSub.path}
+                      label={drawerOptionsSub.label}
+                      onClick={smDown ? toggleDrawerOpen : undefined}
+                    />
+                    
+                  </ListItem>
+                  ))}
+                  </ListItemButton>
+
+
+
+                  </List>
+                </Collapse>
+
+
                 {/* <ListItemButton onClick={handleClickVeic}>
                   <ListItemIcon>
                     <Icon>directions_car</Icon>
                   </ListItemIcon>
-                  <ListItemText primary="Veiculos" />
-                  {openVeiculos ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton> */}
+                  <ListItemText primary="Frota" />
+                  {openVeiculos ? <ExpandLess /> : <ExpandMore /> }
+                </ListItemButton> 
 
-                {/* <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
+                <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     <ListItemButton sx={{ pl: 4 }}>
                       <ListItemIcon>
@@ -108,6 +146,8 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
                     </ListItemButton>
                   </List>
                 </Collapse> */}
+
+
               </List>
 
             </nav>

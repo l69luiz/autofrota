@@ -44,7 +44,7 @@ interface IDetalheCliente {
   Email: string;
   Grupo: string;
   StatusAutoRastrear: string;
-  StatusLoja: string;
+  StatusEmpresa: string;
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
@@ -73,7 +73,7 @@ export const DetalheCliente: React.FC = () => {
     Email: '',
     Grupo: '',
     StatusAutoRastrear: '',
-    StatusLoja: '',
+    StatusEmpresa: '',
     Data_Nascimento: '',
     Sexo: '',
     Estado_Civil: '',
@@ -85,7 +85,7 @@ export const DetalheCliente: React.FC = () => {
   const estadosCivis = ['Solteiro', 'Casado', 'Divorciado', 'Viúvo'];
   const clienteGrupo = ['Comum', 'Prioritário', 'Funcionário', 'VIP', 'Devedor'];
   const clienteStatusAutoRastrear = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
-  const clienteStatusLoja = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
+  const clienteStatusEmpresa = ['Ativo', 'Suspenso', 'Inativo', 'Retirado', 'Devedor'];
   const [dialogOpen, setDialogOpen] = useState(false);
   const [clienteIdParaDeletar, setClienteIdParaDeletar] = useState<number | null>(null);
   const [dataNascimento, setDataNascimento] = React.useState<Dayjs | null>(cliente.Data_Nascimento ? dayjs(cliente.Data_Nascimento) : null);
@@ -748,13 +748,13 @@ export const DetalheCliente: React.FC = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Status na Empresa"
-                  name="StatusLoja"
-                  value={cliente.StatusLoja}
+                  name="StatusEmpresa"
+                  value={cliente.StatusEmpresa}
                   onChange={handleInputChange}
                   select
                   fullWidth
                 >
-                  {clienteStatusLoja.map((status) => (
+                  {clienteStatusEmpresa.map((status) => (
                     <MenuItem key={status} value={status}>
                       {status}
                     </MenuItem>

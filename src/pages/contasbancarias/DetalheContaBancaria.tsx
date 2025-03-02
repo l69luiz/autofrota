@@ -27,7 +27,7 @@ export const DetalheContaBancaria: React.FC = () => {
     CPF_CNPJ_Titular: null,
     StatusConta: null,
     DataAbertura: null,
-    Lojas_idLoja: null,
+    Empresas_idEmpresa: null,
   });
 
   const [dialogOpen, setDialogOpen] = useState(false);

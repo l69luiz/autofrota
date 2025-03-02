@@ -36,7 +36,7 @@ interface IEstoque {
   AreaCoberta: number;
   Data_Abertura: Date | null;
   Status: string | null;
-  Lojas_idLoja: number;
+  Empresas_idEmpresa: number;
   Local: string | null;
   Nome: string | null;
   createdAt: Date;

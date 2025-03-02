@@ -23,6 +23,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 export const AppRoutes: React.FC = () => {
   const { setDrawerOptions } = useDrawerContext();
+  const { setDrawerOptionsSub } = useDrawerContext();
   
   useEffect(() => {
     setDrawerOptions([
@@ -41,8 +42,24 @@ export const AppRoutes: React.FC = () => {
 
 
         { icon: <AddBusinessIcon />,
-        path: "/estoques", 
-        label: "Estoques" },
+        path: "/empresas", 
+        label: "Empresa" },
+        
+        // { icon: <AccountBalanceIcon />,
+        // path: "/contasbancarias", 
+        // label: "Contas Bancarias" },
+      
+     
+    ]);
+  }, [setDrawerOptions]);
+
+  useEffect(() => {
+    setDrawerOptionsSub([
+
+      
+        { icon: <AddBusinessIcon />,
+        path: "/empresas", 
+        label: "Empresa" },
         
         { icon: <AccountBalanceIcon />,
         path: "/contasbancarias", 
@@ -50,11 +67,10 @@ export const AppRoutes: React.FC = () => {
       
      
     ]);
-  }, [setDrawerOptions]);
+  }, [setDrawerOptionsSub]);
 
   const isAuthenticated = sessionStorage.getItem('token') !== null;
-  console.log("isd: ", isAuthenticated);
-  
+   
   // Função para proteger as rotas que necessitam de autenticação
   // const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   //   return isAuthenticated ? element : <Navigate to="/login" />;
@@ -81,10 +97,10 @@ export const AppRoutes: React.FC = () => {
       <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
       
       {/* Outras rotas protegidas */}
-      <Route path="/estoques" element={isAuthenticated === true ? <ListagemDeEstoques /> : <Navigate to="/login" />} />
+      {/* <Route path="/empresas" element={isAuthenticated === true ? <ListagemDeEstoques /> : <Navigate to="/login" />} /> */}
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
-      <Route path="estoques/detalhe/:idEstoque" element={isAuthenticated === true ? <DetalheEstoque /> : <Navigate to="/login" />} />
+      {/* <Route path="empresas/detalhe/:idEmpresa" element={isAuthenticated === true ? <DetalheEmpresa /> : <Navigate to="/login" />} /> */}
      
       {/* Outras rotas protegidas */}
       <Route path="/contasbancarias" element={isAuthenticated === true ? <ListagemDeContasBancarias /> : <Navigate to="/login" />} />

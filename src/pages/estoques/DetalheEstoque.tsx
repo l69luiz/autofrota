@@ -22,7 +22,7 @@ export const DetalheEstoque: React.FC = () => {
     Data_Abertura: null,
     Status: '',
     Local: '',
-    Lojas_idLoja: null, // Defina o valor inicial conforme necessário
+    Empresas_idEmpresa: null, // Defina o valor inicial conforme necessário
   });
 
   const [dialogOpen, setDialogOpen] = useState(false);

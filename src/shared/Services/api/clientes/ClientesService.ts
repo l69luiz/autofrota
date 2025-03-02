@@ -26,11 +26,11 @@ export interface IDetalheCliente {
   Email: string;
   Grupo: string;
   StatusAutoRastrear: string;
-  StatusLoja: string;
+  StatusEmpresa: string;
   Data_Nascimento: string;
   Sexo: string;
   Estado_Civil: string;
-  //Lojas_idLoja: number;
+  //Empresas_idEmpresa: number;
 }
 
 export type TClienteComTotalCount = {
@@ -151,6 +151,6 @@ export const ClientesService = {
     create,
     UpdateById,
     deleteById,
-    //getIdLojaToken
+    //getIdEmpresaToken
 }
 

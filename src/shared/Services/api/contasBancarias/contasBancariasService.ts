@@ -16,7 +16,7 @@ export interface IListagemContaBancaria {
   CPF_CNPJ_Titular: string | null;
   StatusConta: string | null;
   DataAbertura: Date | null;
-  Lojas_idLoja: number;
+  Empresas_idEmpresa: number;
 }
 
 // Interface para representar os detalhes de uma conta bancária
@@ -33,7 +33,7 @@ export interface IDetalheContaBancaria {
   CPF_CNPJ_Titular: string | null;
   StatusConta: string | null;
   DataAbertura: Date | null;
-  Lojas_idLoja: number | null;
+  Empresas_idEmpresa: number | null;
 }
 
 // Tipo para a resposta da API com paginação
