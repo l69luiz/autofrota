@@ -23,7 +23,6 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 export const AppRoutes: React.FC = () => {
   const { setDrawerOptions } = useDrawerContext();
-  const { setDrawerOptionsSub } = useDrawerContext();
   
   useEffect(() => {
     setDrawerOptions([
@@ -39,6 +38,10 @@ export const AppRoutes: React.FC = () => {
       { icon: <DirectionsCarIcon />,
         path: "/veiculos", 
         label: "Veiculos" },
+      
+        { icon: <DirectionsCarIcon />,
+        path: "/vendas", 
+        label: "Vendas" },
 
 
         { icon: <AddBusinessIcon />,
@@ -53,21 +56,6 @@ export const AppRoutes: React.FC = () => {
     ]);
   }, [setDrawerOptions]);
 
-  useEffect(() => {
-    setDrawerOptionsSub([
-
-      
-        { icon: <AddBusinessIcon />,
-        path: "/empresas", 
-        label: "Empresa" },
-        
-        { icon: <AccountBalanceIcon />,
-        path: "/contasbancarias", 
-        label: "Contas Bancarias" },
-      
-     
-    ]);
-  }, [setDrawerOptionsSub]);
 
   const isAuthenticated = sessionStorage.getItem('token') !== null;
    

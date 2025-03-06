@@ -53,7 +53,6 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
-  const { isDrawerOpenSub, toggleDrawerOpenSub, drawerOptionsSub } = useDrawerContext();
   const [openVeiculos, setOpenVeic] = React.useState(false);
   const handleClickVeic = () => {
     setOpenVeic(!openVeiculos);
@@ -105,26 +104,24 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
                 </ListItemButton> 
 
                 <Collapse in={openVeiculos} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                  <ListItemButton sx={{ pl: 4 }}>
-                  {drawerOptionsSub.map(drawerOptionsSub => (
-                    
+                 
+               
+                                     
                   <ListItem disablePadding>
                     <ListItemLink
-                      key={drawerOptionsSub.path}
-                      icon={drawerOptionsSub.icon}
-                      to={drawerOptionsSub.path}
-                      label={drawerOptionsSub.label}
+                      key={"/empresas"}
+                      icon={<Icon>directions_car</Icon>}
+                      to={"/vendas"}
+                      label={"/vendas"}
                       onClick={smDown ? toggleDrawerOpen : undefined}
-                    />
+                 ></ListItemLink>
                     
                   </ListItem>
-                  ))}
-                  </ListItemButton>
+                
 
 
 
-                  </List>
+                
                 </Collapse>
 
 

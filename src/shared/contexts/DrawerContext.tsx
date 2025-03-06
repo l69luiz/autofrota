@@ -17,13 +17,9 @@ interface IDrawerOptionsSub {
 // Defina a interface para o contexto do drawer
 interface IDrawerContextData {
   isDrawerOpen: boolean;
-  isDrawerOpenSub: boolean;
   toggleDrawerOpen: () => void;
-  toggleDrawerOpenSub: () => void;
   drawerOptions: IDrawerOptions[];
-  drawerOptionsSub: IDrawerOptionsSub[];
   setDrawerOptions: (newDrawerOptions: IDrawerOptions[]) => void;
-  setDrawerOptionsSub: (newDrawerOptionsSub: IDrawerOptionsSub[]) => void;
 }
 
 // Defina as props do provider
@@ -42,40 +38,25 @@ export const useDrawerContext = () => {
 // Provider do Drawer
 export const DrawerProvider: React.FC< ThemeProviderProps> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isDrawerOpenSub, setIsDrawerOpenSub] = useState(false);
   const [drawerOptions, setDrawerOptions] = useState<IDrawerOptions[]>([]);
-  const [drawerOptionsSub, setDrawerOptionsSub] = useState<IDrawerOptionsSub[]>([]);
 
   // Função para alternar o estado do drawer (aberto/fechado)
   const toggleDrawerOpen = useCallback(() => {
     setIsDrawerOpen((oldDrawerOpen) => !oldDrawerOpen);
   }, []);
   
-  // Função para alternar o estado do drawerSub (aberto/fechado)
-  const toggleDrawerOpenSub = useCallback(() => {
-    setIsDrawerOpenSub((oldDrawerOpenSub) => !oldDrawerOpenSub);
-  }, []);
-
   // Função para definir as opções do drawer
   const handleSetDrawerOptions = useCallback((newDrawerOptions: IDrawerOptions[]) => {
     setDrawerOptions(newDrawerOptions);
-  }, []);
-  // Função para definir as opções do drawerSub
-  const handleSetDrawerOptionsSub = useCallback((newDrawerOptionsSub: IDrawerOptionsSub[]) => {
-    setDrawerOptionsSub(newDrawerOptionsSub);
   }, []);
 
   return (
     <DrawerContext.Provider
       value={{
         isDrawerOpen,
-        isDrawerOpenSub,
         drawerOptions,
-        drawerOptionsSub,
         toggleDrawerOpen,
-        toggleDrawerOpenSub,
         setDrawerOptions: handleSetDrawerOptions,
-        setDrawerOptionsSub: handleSetDrawerOptionsSub,
       }}
     >
       {children}

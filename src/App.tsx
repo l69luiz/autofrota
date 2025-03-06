@@ -33,7 +33,8 @@ export const App = () => {
            {/* <Route path="*" element={<Navigate to="/login" />} /> */}
           
            {/* Renderização do Menu Lateral com as rotas autenticadas */}
-           <Route path="*" element={<MenuLateral><AppRoutes /></MenuLateral>} />
+           <Route path="*" element={<MenuLateral><AppRoutes /></MenuLateral>} /> 
+
              
         
          </Routes>
