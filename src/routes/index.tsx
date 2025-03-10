@@ -39,14 +39,14 @@ export const AppRoutes: React.FC = () => {
         path: "/veiculos", 
         label: "Veiculos" },
       
-        { icon: <DirectionsCarIcon />,
-        path: "/vendas", 
-        label: "Vendas" },
+        { icon: <AccountBalanceIcon />,
+        path: "/contasbancarias", 
+        label: "Contas Bancárias" },
 
 
-        { icon: <AddBusinessIcon />,
-        path: "/empresas", 
-        label: "Empresa" },
+        // { icon: <AddBusinessIcon />,
+        // path: "/empresas", 
+        // label: "Empresa" },
         
         // { icon: <AccountBalanceIcon />,
         // path: "/contasbancarias", 

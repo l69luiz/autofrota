@@ -54,6 +54,12 @@ export const ListagemDeContasBancarias: React.FC = () => {
     setContaBancariaIdParaDeletar(null);
   }, []);
 
+    const handleEdit = useCallback((idContasBancarias: number) => {
+      navigate(`/contasbancarias/detalhe/${idContasBancarias}`);
+    }, [navigate]);
+    
+
+
   const handleDelete = useCallback(async () => {
     if (!contaBancariaIdParaDeletar) return;
 
@@ -147,7 +153,7 @@ export const ListagemDeContasBancarias: React.FC = () => {
                         <IconButton size="small" onClick={() => handleDeleteDialogOpen(conta.idContasBancarias)}>
                           <Icon>delete</Icon>
                         </IconButton>
-                        <IconButton size="small" onClick={() => navigate(`/contasBancarias/detalhe/${conta.idContasBancarias}`)}>
+                        <IconButton size="small" onClick={() => handleEdit(conta.idContasBancarias)}>
                           <Edit/>
                         </IconButton>
                         <IconButton size="small" onClick={() => navigate(`/contasBancarias/detalhe/${conta.idContasBancarias}`)}>

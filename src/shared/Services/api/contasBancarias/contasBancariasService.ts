@@ -67,14 +67,15 @@ const getAll = async (page = 1, filter = ''): Promise<TContaBancariaComTotalCoun
 };
 
 // Método para buscar uma conta bancária pelo ID
-const getById = async (idContasBancarias: number): Promise<IDetalheContaBancaria | Error> => {
+const getById = async (idContaBancaria: number): Promise<IDetalheContaBancaria | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
 
-    const { data } = await Api.get(`/contasBancarias/${idContasBancarias}`, config); // Envia o token junto com a requisição
+    const { data } = await Api.get(`/contasBancarias/${idContaBancaria}`, config); // Envia o token junto com a requisição
 
     if (data) {
+      console.log(data);
       return data;
     }
     return new Error('Erro ao consultar o registro.');

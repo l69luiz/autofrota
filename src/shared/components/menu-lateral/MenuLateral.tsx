@@ -95,7 +95,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
                 ))}
 
-                <ListItemButton onClick={handleClickVeic}>
+                {/* <ListItemButton onClick={handleClickVeic}>
                   <ListItemIcon>
                     <Icon>directions_car</Icon>
                   </ListItemIcon>
@@ -122,7 +122,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
 
                 
-                </Collapse>
+                </Collapse> */}
 
 
                 {/* <ListItemButton onClick={handleClickVeic}>
