@@ -36,6 +36,8 @@ export interface IDetalheContaBancaria {
   Empresas_idEmpresa: number | null;
 }
 
+
+
 // Tipo para a resposta da API com paginação
 export type TContaBancariaComTotalCount = {
   data: IListagemContaBancaria[];
@@ -67,12 +69,14 @@ const getAll = async (page = 1, filter = ''): Promise<TContaBancariaComTotalCoun
 };
 
 // Método para buscar uma conta bancária pelo ID
-const getById = async (idContaBancaria: number): Promise<IDetalheContaBancaria | Error> => {
+const getById = async (idContasBancarias: number): Promise<IDetalheContaBancaria | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
+    console.log(idContasBancarias);
 
-    const { data } = await Api.get(`/contasBancarias/${idContaBancaria}`, config); // Envia o token junto com a requisição
+    const { data } = await Api.get(`/contasBancarias/${idContasBancarias}`, config); // Envia o token junto com a requisição
+    console.log(data);
 
     if (data) {
       console.log(data);
@@ -110,6 +114,7 @@ const updateById = async (id: number, dados: IDetalheContaBancaria): Promise<voi
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
+
 
     const resp = await Api.put(`/contasBancarias/${id}`, dados, config); // Envia o token junto com a requisição
 

@@ -94,7 +94,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/contasbancarias" element={isAuthenticated === true ? <ListagemDeContasBancarias /> : <Navigate to="/login" />} />
       
       {/* Rota para editar contasbancarias, utilizando o id da contasbancarias */}
-      <Route path="contasbancarias/detalhe/:idContaBancaria" element={isAuthenticated === true ? <DetalheContaBancaria /> : <Navigate to="/login" />} />
+      <Route path="contasbancarias/detalhe/:idContasBancarias" element={isAuthenticated === true ? <DetalheContaBancaria /> : <Navigate to="/login" />} />
       
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />

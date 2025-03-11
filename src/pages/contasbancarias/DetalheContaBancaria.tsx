@@ -12,20 +12,21 @@ import { FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
 
 export const DetalheContaBancaria: React.FC = () => {
   const { idContasBancarias } = useParams<'idContasBancarias'>();
+  console.log("Id vindo", idContasBancarias);
   const navigate = useNavigate();
   const idContaBancariaApagar = Number(idContasBancarias);
   const [contaBancaria, setContaBancaria] = useState<IDetalheContaBancaria>({
     idContasBancarias: Number(idContasBancarias),
     NumeroBanco: '',
     NumeroConta: '',
-    DigitoConta: null,
-    NumeroAgenciaBanco: null,
-    DigitoAgencia: null,
-    NomeBanco: null,
-    TipoConta: null,
-    NomeTitular: null,
-    CPF_CNPJ_Titular: null,
-    StatusConta: null,
+    DigitoConta: '',
+    NumeroAgenciaBanco: '',
+    DigitoAgencia: '',
+    NomeBanco: '',
+    TipoConta: '',
+    NomeTitular: '',
+    CPF_CNPJ_Titular: '',
+    StatusConta: '',
     DataAbertura: null,
     Empresas_idEmpresa: null,
   });
@@ -185,12 +186,17 @@ export const DetalheContaBancaria: React.FC = () => {
   const handleCancel = () => {
     navigate('/contasBancarias');
   };
+ 
 
   useEffect(() => {
     const fetchContaBancaria = async () => {
       try {
         if (idContasBancarias && idContasBancarias !== 'novo') {
+
+          console.log("lkajçlkajslçdkfjlçaskdjf", idContasBancarias);
+          alert(idContasBancarias);
           const idContasBancariasNumber = Number(idContasBancarias);
+
           if (!isNaN(idContasBancariasNumber)) {
             setIsSaving(true);
             const response = await ContasBancariasService.getById(idContasBancariasNumber);
@@ -218,6 +224,7 @@ export const DetalheContaBancaria: React.FC = () => {
   }, [idContasBancarias]);
 
   return (
+    
     <MenuLateral>
       <div style={{ flex: 1 }}>
         <LayoutBaseDePagina
@@ -237,6 +244,7 @@ export const DetalheContaBancaria: React.FC = () => {
               aoClicarEmApagar={() => handleDeleteDialogOpen(idContaBancariaApagar)}
               aoClicarEmVoltar={handleCancel}
             />
+           
           }
         >
           {isSaving && <LinearProgress />}
