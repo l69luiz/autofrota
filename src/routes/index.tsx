@@ -19,6 +19,9 @@ import { DetalheEstoque } from '../pages/estoques/DetalheEstoque';
 import { ListagemDeContasBancarias } from '../pages/contasbancarias/ListagemDeContasBancarias';
 import { DetalheContaBancaria } from '../pages/contasbancarias/DetalheContaBancaria';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+import { DetalheEmpresa } from '../pages/empresas/DetalheEmpresa';
+import { ListagemDeEmpresas } from '../pages/empresas/ListagemDeEmpresas';
 
 
 export const AppRoutes: React.FC = () => {
@@ -42,6 +45,15 @@ export const AppRoutes: React.FC = () => {
         { icon: <AccountBalanceIcon />,
         path: "/contasbancarias", 
         label: "Contas Bancárias" },
+        
+        
+        { icon: <WarehouseIcon />,
+        path: "/estoques", 
+        label: "Estoques" },
+        
+        { icon: <WarehouseIcon />,
+        path: "/empresas", 
+        label: "Empresas" },
 
 
         // { icon: <AddBusinessIcon />,
@@ -72,29 +84,35 @@ export const AppRoutes: React.FC = () => {
       {/* Rota protegida para a página inicial */}
       <Route path="/pagina-inicial" element={isAuthenticated === true ? <PaginaInicial /> : <Navigate to="/login" />} />
       
-      {/* Outras rotas protegidas */}
+      {/* Rota protegida para clientes */}
       <Route path="/clientes" element={isAuthenticated === true ? <ListagemDeClientes /> : <Navigate to="/login" />} />
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="clientes/detalhe/:idCliente" element={isAuthenticated === true ? <DetalheCliente /> : <Navigate to="/login" />} />
 
-      {/* Outras rotas protegidas */}
+      {/* Rota protegida para veiculos */}
       <Route path="/veiculos" element={isAuthenticated === true ? <ListagemDeVeiculos /> : <Navigate to="/login" />} />
       
-      {/* Rota para editar cliente, utilizando o id do cliente */}
+      {/* Rota para editar veiculo, utilizando o id do veiculo */}
       <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
       
-      {/* Outras rotas protegidas */}
-      {/* <Route path="/empresas" element={isAuthenticated === true ? <ListagemDeEstoques /> : <Navigate to="/login" />} /> */}
+      {/* Rota protegida para empresas */}
+      <Route path="/empresas" element={isAuthenticated === true ? <ListagemDeEmpresas /> : <Navigate to="/login" />} />
       
-      {/* Rota para editar cliente, utilizando o id do cliente */}
-      {/* <Route path="empresas/detalhe/:idEmpresa" element={isAuthenticated === true ? <DetalheEmpresa /> : <Navigate to="/login" />} /> */}
+      {/* Rota para editar empresa, utilizando o id da empresa */}
+      <Route path="empresas/detalhe/:idEmpresa" element={isAuthenticated === true ? <DetalheEmpresa /> : <Navigate to="/login" />} />
      
-      {/* Outras rotas protegidas */}
+      {/* Rota protegida para contas bancarias */}
       <Route path="/contasbancarias" element={isAuthenticated === true ? <ListagemDeContasBancarias /> : <Navigate to="/login" />} />
       
       {/* Rota para editar contasbancarias, utilizando o id da contasbancarias */}
       <Route path="contasbancarias/detalhe/:idContasBancarias" element={isAuthenticated === true ? <DetalheContaBancaria /> : <Navigate to="/login" />} />
+     
+      {/* Rota protegida para estoques */}
+      <Route path="/estoques" element={isAuthenticated === true ? <ListagemDeEstoques /> : <Navigate to="/login" />} />
+      
+      {/* Rota para editar estoques, utilizando o id do estoque */}
+      <Route path="estoques/detalhe/:idEstoque" element={isAuthenticated === true ? <DetalheEstoque /> : <Navigate to="/login" />} />
       
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />

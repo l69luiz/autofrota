@@ -18,6 +18,9 @@ interface IListItemLinksProps {
   onClick: (() => void) | undefined;
 }
 
+
+
+
 const ListItemLink: React.FC<IListItemLinksProps> = ({ label, icon, to, onClick }) => {
   const navigate = useNavigate();
 
@@ -32,7 +35,7 @@ const ListItemLink: React.FC<IListItemLinksProps> = ({ label, icon, to, onClick 
   return (
     <ListItemButton selected={!!match} onClick={handleclick}>
       <ListItemIcon>
-        <Icon>{icon}</Icon>
+        <Icon color={match ? 'primary' : 'action'}>{icon}</Icon>
       </ListItemIcon>
       <ListItemText primary={label} />
     </ListItemButton>
@@ -84,6 +87,7 @@ export const MenuLateral: React.FC<MenuLateralProviderProps> = ({ children }) =>
 
                   <ListItem disablePadding>
                     <ListItemLink
+                    
                       key={drawerOptions.path}
                       icon={drawerOptions.icon}
                       to={drawerOptions.path}

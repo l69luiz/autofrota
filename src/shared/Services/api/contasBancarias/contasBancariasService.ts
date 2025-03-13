@@ -50,7 +50,7 @@ const getAll = async (page = 1, filter = ''): Promise<TContaBancariaComTotalCoun
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
 
-    const urlRelativa = `/contasBancarias?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeBanco_like=${filter}`;
+    const urlRelativa = `/contasbancarias?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeBanco_like=${filter}`;
 
     const { data, headers } = await Api.get(urlRelativa, config); // Envia o token junto com a requisição
 
