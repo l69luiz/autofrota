@@ -79,9 +79,10 @@ const create = async (dados: Omit<IDetalheEmpresa, 'idEmpresa'>): Promise<void |
     
   } catch (error) {
     if (error.response) {
+      alert(error.response.data.message);
       // Define a mensagem de erro e exibe o Snackbar
       throw error;
-      //alert(error.response.data.message);
+      
     } 
   }
 };

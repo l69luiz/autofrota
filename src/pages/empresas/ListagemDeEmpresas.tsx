@@ -97,11 +97,12 @@ export const ListagemDeEmpresas: React.FC = () => {
       setIsLoading(true);
       try {
         const result = await EmpresasService.getAll(pagina, busca);
+
         if (result instanceof Error) {
           alert(result.message);
         } else {
-          setEmpresas(result.data);
-          setTotalCount(result.totalCount);
+          setEmpresas(result.data || []);
+          setTotalCount(result.totalCount || 0);
         }
       } catch (error) {
         console.error("Erro ao buscar empresas:", error);
@@ -114,6 +115,7 @@ export const ListagemDeEmpresas: React.FC = () => {
     debounce(fetchEmpresas);
   }, [busca, pagina, debounce]);
 
+  
   const handlePaginationChange = useCallback(
     (_: React.ChangeEvent<unknown>, newPage: number) => {
       setSearchParams({ busca, pagina: newPage.toString() }, { replace: true });

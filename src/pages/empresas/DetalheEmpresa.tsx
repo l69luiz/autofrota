@@ -128,7 +128,7 @@ export const DetalheEmpresa: React.FC = () => {
         }
       }
     } catch (error) {
-      setMensagemErro('Erro ao criar empresa.');
+      setMensagemErro('Erro ao criar empresa.' + error);
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     } finally {
