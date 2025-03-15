@@ -21,7 +21,6 @@ import { DetalheContaBancaria } from '../pages/contasbancarias/DetalheContaBanca
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { DetalheEmpresa } from '../pages/empresas/DetalheEmpresa';
-import { ListagemDeEmpresas } from '../pages/empresas/ListagemDeEmpresas';
 
 
 export const AppRoutes: React.FC = () => {
@@ -52,8 +51,8 @@ export const AppRoutes: React.FC = () => {
         label: "Estoques" },
         
         { icon: <WarehouseIcon />,
-        path: "/empresas", 
-        label: "Empresas" },
+        path: "/empresa", 
+        label: "Empresa" },
 
 
         // { icon: <AddBusinessIcon />,
@@ -96,12 +95,11 @@ export const AppRoutes: React.FC = () => {
       {/* Rota para editar veiculo, utilizando o id do veiculo */}
       <Route path="veiculos/detalhe/:idVeiculo" element={isAuthenticated === true ? <DetalheVeiculo /> : <Navigate to="/login" />} />
       
-      {/* Rota protegida para empresas */}
-      <Route path="/empresas" element={isAuthenticated === true ? <ListagemDeEmpresas /> : <Navigate to="/login" />} />
-      
+            
       {/* Rota para editar empresa, utilizando o id da empresa */}
-      <Route path="empresas/detalhe/:idEmpresa" element={isAuthenticated === true ? <DetalheEmpresa /> : <Navigate to="/login" />} />
-     
+      <Route path="/empresa" element={isAuthenticated === true ? <DetalheEmpresa /> : <Navigate to="/login" />} />
+      
+
       {/* Rota protegida para contas bancarias */}
       <Route path="/contasbancarias" element={isAuthenticated === true ? <ListagemDeContasBancarias /> : <Navigate to="/login" />} />
       

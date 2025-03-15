@@ -66,24 +66,38 @@ const getById = async (idEmpresa: number): Promise<IDetalheEmpresa | Error> => {
     return new Error((error as { message: string }).message || 'Erro ao consultar o registro.');
   }
 };
-
-const create = async (dados: Omit<IDetalheEmpresa, 'idEmpresa'>): Promise<void | Error> => {
+const getByIdToken = async (): Promise<IDetalheEmpresa | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-    const resp = await Api.post('/empresas', dados, config); // Faz a requisição
-    if (resp.status === 201) {
-      // Exibe uma mensagem de sucesso (Snackbar, por exemplo)
-      return  resp.data.message; // Finaliza a função sem erros
+    
+    const { data } = await Api.get(`/empresa/detalhe`, config); // Envia o token junto com a requisição
+    
+    if (data) {
+      return data;
     }
+    return new Error('Erro ao consultar o registro.');
     
   } catch (error) {
-    if (error.response) {
-      alert(error.response.data.message);
-      // Define a mensagem de erro e exibe o Snackbar
-      throw error;
-      
-    } 
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao consultar o registro.');
+  }
+};
+
+
+const create = async (dados: Omit<IDetalheEmpresa, 'idEmpresa'>): Promise<IDetalheEmpresa | Error> => {
+  try {
+    const token = sessionStorage.getItem('token');
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    const { data } = await Api.post('/empresas', dados, config); // Faz a requisição
+
+    if (data) {
+      return data; // Retorna o objeto da empresa criada
+    }
+    return new Error('Erro ao criar empresa.');
+  } catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao criar empresa.');
   }
 };
 
@@ -124,4 +138,5 @@ export const EmpresasService = {
   create,
   updateById,
   deleteById,
+  getByIdToken
 };
