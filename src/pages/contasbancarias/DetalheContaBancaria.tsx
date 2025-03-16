@@ -12,7 +12,6 @@ import { FerramentasDeDetalhe, MenuLateral } from '../../shared/components';
 
 export const DetalheContaBancaria: React.FC = () => {
   const { idContasBancarias } = useParams<'idContasBancarias'>();
-  console.log("Id vindo", idContasBancarias);
   const navigate = useNavigate();
   const idContaBancariaApagar = Number(idContasBancarias);
   const [contaBancaria, setContaBancaria] = useState<IDetalheContaBancaria>({
@@ -193,8 +192,6 @@ export const DetalheContaBancaria: React.FC = () => {
       try {
         if (idContasBancarias && idContasBancarias !== 'novo') {
 
-          console.log("lkajçlkajslçdkfjlçaskdjf", idContasBancarias);
-          alert(idContasBancarias);
           const idContasBancariasNumber = Number(idContasBancarias);
 
           if (!isNaN(idContasBancariasNumber)) {

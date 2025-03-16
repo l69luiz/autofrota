@@ -55,7 +55,6 @@ export const ListagemDeContasBancarias: React.FC = () => {
   }, []);
 
     const handleEdit = useCallback((idContasBancarias: number) => {
-      alert(idContasBancarias);
       navigate(`/contasbancarias/detalhe/${idContasBancarias}`);
     }, [navigate]);
     
