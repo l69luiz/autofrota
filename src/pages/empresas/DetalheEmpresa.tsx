@@ -18,7 +18,6 @@ interface IDetalheEmpresaForm extends Omit<IDetalheEmpresa, 'idEmpresa'> {
 
 export const DetalheEmpresa: React.FC = () => {
   const { idEmpresa } = useParams<'idEmpresa'>();
-
   const navigate = useNavigate();
   const idEmpresaApagar = Number(idEmpresa);
   const [empresa, setEmpresa] = useState<IDetalheEmpresaForm>({
@@ -40,7 +39,7 @@ export const DetalheEmpresa: React.FC = () => {
   const [cnpjMasked, setCnpjMasked] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
     if (name === 'CNPJ_Empresa') {
@@ -129,7 +128,7 @@ export const DetalheEmpresa: React.FC = () => {
         }
       }
     } catch (error) {
-      setMensagemErro('Erro ao criar empresa.' + error);
+      setMensagemErro(error.response.data.message);
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     } finally {
@@ -138,10 +137,10 @@ export const DetalheEmpresa: React.FC = () => {
   };
 
   const handleSave = async () => {
+    
     try {
+      if (idEmpresa !== 'novo') {
       setIsSaving(true);
-      alert('Dentro do try');
-
       // Verifica campos obrigatórios
       if (!empresa.Nome_Empresa) {
         setMensagemErro('Por favor, insira um nome válido.');
@@ -157,13 +156,10 @@ export const DetalheEmpresa: React.FC = () => {
         return;
       }
 
-      if (idEmpresa !== 'novo') {
-        alert('Dentro do Empresa');
-        const idEmpresaNumber = Number(idEmpresaApagar);
+         const idEmpresaNumber = empresa.idEmpresa;
         
-        alert(idEmpresaApagar);
-        alert(idEmpresaNumber);
-        if (!isNaN(idEmpresaNumber)) {
+         if (idEmpresaNumber !== undefined && !isNaN(idEmpresaNumber)) {
+
           const empresaAtualizada = await EmpresasService.updateById(idEmpresaNumber, empresa as IDetalheEmpresa);
 
           if (empresaAtualizada instanceof Error) {
@@ -178,7 +174,8 @@ export const DetalheEmpresa: React.FC = () => {
         }
       }
     } catch (error) {
-      setMensagemErro('Erro ao atualizar empresa.');
+      console.log(error);
+      setMensagemErro(error.response.data.message);
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     } finally {
@@ -190,13 +187,16 @@ export const DetalheEmpresa: React.FC = () => {
     navigate('/empresas');
   };
 
+
   useEffect(() => {
     const fetchEmpresa = async () => {
       try {
         if (idEmpresa && idEmpresa !== 'novo') {
           const idEmpresaNumber = Number(idEmpresa);
+          
           if (!isNaN(idEmpresaNumber)) {
             setIsSaving(true);
+            
             const response = await EmpresasService.getById(idEmpresaNumber);
             if (response instanceof Error) {
               console.error('Erro ao buscar empresa5:', response.message);

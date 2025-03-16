@@ -20,6 +20,7 @@ import { ListagemDeContasBancarias } from '../pages/contasbancarias/ListagemDeCo
 import { DetalheContaBancaria } from '../pages/contasbancarias/DetalheContaBancaria';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import { DetalheEmpresa } from '../pages/empresas/DetalheEmpresa';
 
 
@@ -50,7 +51,7 @@ export const AppRoutes: React.FC = () => {
         path: "/estoques", 
         label: "Estoques" },
         
-        { icon: <WarehouseIcon />,
+        { icon: <CorporateFareIcon />,
         path: "/empresa", 
         label: "Empresa" },
 
