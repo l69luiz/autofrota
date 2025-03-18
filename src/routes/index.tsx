@@ -22,6 +22,9 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import { DetalheEmpresa } from '../pages/empresas/DetalheEmpresa';
+import { ListagemDeUsuarios } from '../pages/usuarios/ListagemDeUsuarios';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import { DetalheUsuario } from '../pages/usuarios/DetalheUsuario';
 
 
 export const AppRoutes: React.FC = () => {
@@ -54,6 +57,10 @@ export const AppRoutes: React.FC = () => {
         { icon: <CorporateFareIcon />,
         path: "/empresa", 
         label: "Empresa" },
+       
+        { icon: <PeopleAltIcon />,
+        path: "/usuarios", 
+        label: "Usuarios" },
 
 
         // { icon: <AddBusinessIcon />,
@@ -113,6 +120,12 @@ export const AppRoutes: React.FC = () => {
       {/* Rota para editar estoques, utilizando o id do estoque */}
       <Route path="estoques/detalhe/:idEstoque" element={isAuthenticated === true ? <DetalheEstoque /> : <Navigate to="/login" />} />
       
+      {/* Rota protegida para clientes */}
+      <Route path="/usuarios" element={isAuthenticated === true ? <ListagemDeUsuarios /> : <Navigate to="/login" />} />
+      
+      {/* Rota para editar cliente, utilizando o id do cliente */}
+      <Route path="usuarios/detalhe/:idUsuario" element={isAuthenticated === true ? <DetalheUsuario /> : <Navigate to="/login" />} />
+ 
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />
 
