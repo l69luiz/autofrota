@@ -25,6 +25,8 @@ import { DetalheEmpresa } from '../pages/empresas/DetalheEmpresa';
 import { ListagemDeUsuarios } from '../pages/usuarios/ListagemDeUsuarios';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { DetalheUsuario } from '../pages/usuarios/DetalheUsuario';
+import { ListagemDeVendas } from '../pages/vendas/ListagemDeVendas';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 
 export const AppRoutes: React.FC = () => {
@@ -61,6 +63,10 @@ export const AppRoutes: React.FC = () => {
         { icon: <PeopleAltIcon />,
         path: "/usuarios", 
         label: "Usuarios" },
+       
+        { icon: <ShoppingCartCheckoutIcon />,
+        path: "/vendas", 
+        label: "Vendas" },
 
 
         // { icon: <AddBusinessIcon />,
@@ -125,6 +131,12 @@ export const AppRoutes: React.FC = () => {
       
       {/* Rota para editar cliente, utilizando o id do cliente */}
       <Route path="usuarios/detalhe/:idUsuario" element={isAuthenticated === true ? <DetalheUsuario /> : <Navigate to="/login" />} />
+      
+      {/* Rota protegida para vendas */}
+      <Route path="/vendas" element={isAuthenticated === true ? <ListagemDeVendas /> : <Navigate to="/login" />} />
+      
+      {/* Rota para editar cliente, utilizando o id da venda */}
+      {/* <Route path="vendas/detalhe/:idVenda" element={isAuthenticated === true ? <DetalheUsuario /> : <Navigate to="/login" />} /> */}
  
       {/* Redirecionamento para a página de login se o usuário tentar acessar outras rotas não autenticado */}
       <Route path="*" element={isAuthenticated === true ? <Navigate to="/pagina-inicial" /> : <Navigate to="/login" />} />

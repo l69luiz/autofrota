@@ -35,23 +35,13 @@ export type TVendaComTotalCount = {
   totalCount: number;
 };
 
-const getAll = async (
-  page = 1,
-  search = ''
-): Promise<TVendaComTotalCount | Error> => {
+const getAll = async (page = 1, filter = ''): Promise<TVendaComTotalCount | Error> => {
   try {
     const token = sessionStorage.getItem('token'); // Pega o token do sessionStorage
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // Adiciona o token no cabeçalho
-
-    // Constrói a URL relativa com base nos filtros fornecidos
-    const queryParams = new URLSearchParams();
-    queryParams.append('_page', page.toString());
-    queryParams.append('_limit', Environment.LIMITE_DE_LINHAS.toString());
-
-    if (search) queryParams.append('search', search); // Envia o parâmetro de busca
-
-    const urlRelativa = `/vendas?${queryParams.toString()}`;
-
+    
+    const urlRelativa = `/vendas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&cliente_like=${filter}`;
+    
     const { data, headers } = await Api.get(urlRelativa, config); // Envia o token junto com a requisição
 
     if (data) {
@@ -61,8 +51,10 @@ const getAll = async (
       };
     }
     return new Error('Erro ao listar os registros.');
+    
   } catch (error) {
     console.error(error);
+    alert(error);
     return new Error((error as { message: string }).message || 'Erro ao listar os registros.');
   }
 };

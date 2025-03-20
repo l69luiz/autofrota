@@ -28,19 +28,20 @@ import { VendasService } from "../../shared/services/api/vendas/VendasService";
 import { Environment } from "../../shared/environments";
 import { LayoutBaseDePagina } from "../../shared/layouts/LayoutBaseDePaginas";
 import { FerramentasDaListagem, MenuLateral } from "../../shared/components"; // Importando o MenuLateral
+import { Api } from "../../shared/services/api/axios-config";
 
 // Interface para representar uma venda
 interface IVenda {
   idVenda: number;
   Data_Venda: string;
   Valor_Venda: number;
-  Cliente: {
+  cliente: {
     Nome: string;
   };
-  Usuario: {
+  usuario: {
     Nome: string;
   };
-  Veiculo: {
+  veiculo: {
     Modelo: string;
     Placa_Veiculo: string;
   };
@@ -89,19 +90,28 @@ export const ListagemDeVendas: React.FC = () => {
     }
   }, [vendaIdParaDeletar, handleDeleteDialogClose]);
 
+
+
   useEffect(() => {
     const fetchVendas = async () => {
       setIsLoading(true);
       try {
-        const result = await VendasService.getAll(pagina, busca);
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          setVendas(result.data || []);
-          setTotalCount(result.totalCount || 0);
-        }
+        const token = sessionStorage.getItem("token");
+        const { data } = await Api.get("/vendas", {
+          params: {
+            _page: pagina,
+            search: busca, // Envia o parâmetro de busca
+            _limit: Environment.LIMITE_DE_LINHAS,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setVendas(data.data || []);
+        setTotalCount(data.totalCount || 0);
       } catch (error) {
-        console.error("Erro ao buscar vendas:", error);
+        console.error("Erro ao buscar veículos:", error);
         setVendas([]);
       } finally {
         setIsLoading(false);
@@ -110,6 +120,7 @@ export const ListagemDeVendas: React.FC = () => {
 
     debounce(fetchVendas);
   }, [busca, pagina, debounce]);
+
 
   const handlePaginationChange = useCallback(
     (_: React.ChangeEvent<unknown>, newPage: number) => {
@@ -162,17 +173,17 @@ export const ListagemDeVendas: React.FC = () => {
                           <Icon>delete</Icon>
                         </IconButton>
                         <IconButton size="small" onClick={() => navigate(`/vendas/detalhe/${venda.idVenda}`)}>
-                          <Edit/>
+                          <Edit />
                         </IconButton>
                         <IconButton size="small" onClick={() => navigate(`/vendas/detalhe/${venda.idVenda}`)}>
-                          <MoreHoriz/>
+                          <MoreHoriz />
                         </IconButton>
                       </TableCell>
                       <TableCell>{new Date(venda.Data_Venda).toLocaleDateString()}</TableCell>
                       <TableCell>{venda.Valor_Venda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
-                      <TableCell>{venda.Cliente.Nome}</TableCell>
-                      <TableCell>{venda.Usuario.Nome}</TableCell>
-                      <TableCell>{venda.Veiculo.Modelo} - {venda.Veiculo.Placa_Veiculo}</TableCell>
+                      <TableCell>{venda.cliente ? venda.cliente.Nome : 'N/A'}</TableCell>
+                      <TableCell>{venda.usuario ? venda.usuario.Nome : 'N/A'}</TableCell>
+                      <TableCell>{venda.veiculo ? `${venda.veiculo.Modelo} - ${venda.veiculo.Placa_Veiculo}` : 'N/A'}</TableCell>
                     </TableRow>
                   ))
                 ) : (
